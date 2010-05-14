@@ -149,7 +149,7 @@ void YGenomeView::draw() {
                     rightPairView = leftPairView;
                 }
             }
-            if(leftPairView) {
+            if(leftPairView && (!suppressUnpaired || rightPairView)) {
             //draw the read 
                 drawReadPairInViews(*i,leftPairView, rightPairView);
             }
@@ -316,4 +316,11 @@ void YGenomeView::setColorForFlag(unsigned int flag) {
         std::cerr << "Unhandled flag" << flag << "\n";
     }        
     
+}
+void YGenomeView::setSuppressUnpairedReads(bool flag) {
+    this->suppressUnpaired = flag;
+}
+
+bool YGenomeView::suppressingUnpairedReads() {
+    return this->suppressUnpaired;
 }

@@ -30,6 +30,7 @@ typedef struct {
     std::set<int> *flags;
     int lower_bound;
     int upper_bound;
+    int minimum_size;
     bam_plbuf_t *buf;
 } pileup_data_t;
 
@@ -129,8 +130,8 @@ static int fetch_func(const bam1_t *b, void *data)
                 //check the size to determine if it hits our insertion/deletion cutoffs
                 //only flagging reads with the default Illumina library orientatio ie "normal" reads
                 //note that this requires proper filling of isize and would not work for maq
+                int abs_size = abs(b->core.isize);
                 if(readflag == YMatePair::FR) { 
-                    int abs_size = abs(b->core.isize);
                     if(abs_size < d->lower_bound) {
                         //assume insertion
                         readflag = YMatePair::IN;
@@ -139,14 +140,16 @@ static int fetch_func(const bam1_t *b, void *data)
                         readflag = YMatePair::DL;
                     }
                 }
-                //if(abs(b->core.isize) < 10000 && readflag != YMatePair::CT) {
-                //    readflag = YMatePair::FR;
-                //}
+
+                //enforce the whole minimum size thing by marking such reads as NF
+                if(abs_size < d->minimum_size && readflag != YMatePair::CT) {
+                    readflag = YMatePair::NF;
+                }
             }
                 
         }
         //fprintf(stderr,"MF = %i\n",maq_flag);
-        if(d->include_normal || (!(b->core.flag & BAM_FPROPER_PAIR) && !(readflag == YMatePair::FR || YMatePair::NF) && (d->flags->empty() || d->flags->find(readflag) != d->flags->end() ))  ) {
+        if(d->include_normal || (!(b->core.flag & BAM_FPROPER_PAIR) && !(readflag == YMatePair::NF) && (d->flags->empty() || d->flags->find(readflag) != d->flags->end() ))  ) {
             //abnormal read
             char *name = bam1_qname(b);
             YMatePair* mate;
@@ -218,7 +221,7 @@ static int pileup_func(uint32_t tid, uint32_t pos, int n, const bam_pileup1_t *p
     return 0;
 }
 
-bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags, int lower_bound, int upper_bound) {
+bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags, int lower_bound, int upper_bound, int minimum_size) {
     //Open the region in the bam file
     //Parse appropriately the MF field and put into slots as needed
     //return!
@@ -234,6 +237,7 @@ bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *ref
     d->include_normal = this->includeNormal;
     d->lower_bound = lower_bound; //by default mark no reads as insertions
     d->upper_bound = upper_bound;    //max integer value to expect in isize. Could this overflow on some systems? 
+    d->minimum_size = minimum_size;
     d->in = samopen(filename, "rb", 0);
 
     if (d->in == 0) {

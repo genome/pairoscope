@@ -51,10 +51,15 @@ class YAlignmentFetcher {
         \param depth vector for storing the read depth of the region
         \param mates vector for storing read pairs in the region
         \param unpaired_reads hash of reads without pairs. It is hashed on the reads names
+        \param flags hash of orientation flags to display
+        \param lower_bound minimum insert size of a normal read pair. Pairs with insert size below this threshold are marked as insertions
+        \param upper_bound maximum insert size of a normal read pair. Pairs with insert size above this threshold are marked as deletions
+        \param minimum_size minimum insert size of a pair to be displayed. Pairs with insert size below this threshold are not displayed
+
         \return whether or not the process was successful
         
          */
-        bool fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags, int lower_bound, int upper_bound);
+        bool fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags, int lower_bound, int upper_bound, int minimum_size);
 };
 
 #endif

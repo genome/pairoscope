@@ -24,6 +24,7 @@ class YGenomeView : public YView {
     unsigned int numberTracks;  //!< number of tracks in the view
     std::vector<YMatePair*> *mates; //!< array of mate pairs to draw \sa YAlignmentFetcher
     void layoutTracks();    //!< determines dimensions of the tracks within the View and aligns them to each other
+    bool suppressUnpaired; //!< whether or not to skip drawing reads who do not have their mate displayed in the graph. Includes reads with one unmapped
     
     public:
         //! standard constructor
@@ -78,6 +79,12 @@ class YGenomeView : public YView {
         
         //! sets the color for the flag
         void setColorForFlag(unsigned int flag);
+        
+        //! sets whether to suppress the drawing of reads where both are mates are not mapped within the region 
+        void setSuppressUnpairedReads(bool flag);
+        
+        //! returns whether the view is set to suppress the drawing of reads where both are mates are not mapped within the region 
+        bool suppressingUnpairedReads();
 };
 
 

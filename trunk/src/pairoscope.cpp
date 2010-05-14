@@ -56,6 +56,8 @@ static int pairoscope_usage() {
     fprintf(stderr, "         -f STRING list of types of maq flags for display\n");
     fprintf(stderr, "         -u INT    upper bound of the insert size for a normal read[%d]\n",0x7FFFFFFF);
     fprintf(stderr, "         -l INT    lower bound of the insert size for a normal read[%d]\n",-1);
+    fprintf(stderr, "         -m INT    minimum size of an event to display. Translocations are always displayed[%d]\n",0);
+    fprintf(stderr, "         -P FLAG   Only display reads with both mates mapped in the graph\n",0);
 
     return 1;
 }
@@ -70,15 +72,15 @@ int main(int argc, char *argv[])
     int min_qual = 0; //minimum alignment quality to report
     int buffer = 0;   //number of base pairs to pad the requested region with on either side  
     char *filename = (char *) "graph.png";  //default name of the file if none is specified
-    bool print_normal = false, pdf = false; //booleans to track whether it will draw normal reads and whether it will generate a pdf instead of a png
+    bool print_normal = false, suppress_unpaired = false ,pdf = false; //booleans to track whether it will draw normal reads, draw unpaired reads and whether it will generate a pdf instead of a png
     int doc_width = 1024, doc_height = 768; //default height and weight of the document in pixels
     char *gene_bam_file = NULL;             //for storing the filename of the annotation bam
     char *flags = NULL;                     //string of comma separated flags for selecting certain reads for display
 
-    int upper_bound = 0x7FFFFFFF, lower_bound = -1;
+    int upper_bound = 0x7FFFFFFF, lower_bound = -1, min_size = 0;
 
     //get the command line options
-    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:")) >= 0) {
+    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:P")) >= 0) {
         switch (c) {
             case 'q': 
                 min_qual = atoi(optarg); 
@@ -122,6 +124,16 @@ int main(int argc, char *argv[])
                     return pairoscope_usage();
                 }
                 break;    
+            case 'm':
+                min_size = atoi(optarg); 
+                if(min_size < 0) {
+                    fprintf(stderr, "Minimum event size must be positive\n");
+                    return pairoscope_usage();
+                }
+                break;    
+            case 'P':
+                suppress_unpaired = true;   
+                break; 
             default: 
                 return pairoscope_usage();
         }
@@ -187,13 +199,14 @@ int main(int argc, char *argv[])
 
     //Create the document on the (whole) page
     YGenomeView document(cr,page, &mappedReads);
+    document.setSuppressUnpairedReads(suppress_unpaired);
 
     //parse reads for each region
     for(int i = 0; i < regions; i++) {
         bool return_value = false;
         
         //fetch the reads from the bam file
-        return_value = fetcher.fetchBAMAlignments(argv[optind], argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(depth[i]), &mappedReads, &unpaired_reads, &flags_to_fetch, lower_bound, upper_bound);
+        return_value = fetcher.fetchBAMAlignments(argv[optind], argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(depth[i]), &mappedReads, &unpaired_reads, &flags_to_fetch, lower_bound, upper_bound, min_size);
         if(return_value) {
             //add the region to the document for display
             document.addRegion((const char*) argv[optind+1], (unsigned) atoi(argv[optind+2]) - buffer, (unsigned int) atoi(argv[optind+3]) + buffer, &(depth[i]));
