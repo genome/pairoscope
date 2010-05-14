@@ -18,11 +18,13 @@ class YMatePair {
     enum orientation_flag {
         FR, //!< reads are in a forward-reverse orientation
         PM, //!< only one read is matched. A Partial Mapping of the mate pair.
-        FF, //!<  reads are in forward-forward orientation
+        FF, //!< reads are in forward-forward orientation
         RF, //!< reads are in reverse-forward orientation
         RR, //!< reads are in reverse-reverse orientation
         CT, //!< reads mapped across chromosomes 
-        NF = 0,
+        DL, //!< reads mapped with distance greater than some cutoff 
+        IN, //!< reads mapped with distance smaller than some cutoff 
+        NF = 0, //!< no flag
     };
 
     char* libraryName;  //!< library where these reads came from

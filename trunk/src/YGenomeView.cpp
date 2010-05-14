@@ -249,6 +249,16 @@ void YGenomeView::setColorForPair(YMatePair* pair) {
         cairo_set_source_rgba (context,0 , 0, .8,.8);
         
     }
+    else if(pair->orientation == YMatePair::IN) {
+        //Mapped FR but supports insertion
+        cairo_set_source_rgba (context, 0.8, .25, 0, .8);
+        
+    }
+    else if(pair->orientation == YMatePair::DL) {
+        //Mapped FR but supports deletion
+        cairo_set_source_rgba (context,0.5 , 0, .5,.8);
+        
+    }
     else {
         //for all other reads graph as darker gray
         cairo_set_source_rgba (context,0.8 , 0.8, .8,.8);

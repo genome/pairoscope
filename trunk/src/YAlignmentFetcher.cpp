@@ -28,6 +28,8 @@ typedef struct {
     std::vector<int> *depth;
     hash_map_char<YMatePair*> *unpaired_reads;    
     std::set<int> *flags;
+    int lower_bound;
+    int upper_bound;
     bam_plbuf_t *buf;
 } pileup_data_t;
 
@@ -92,10 +94,10 @@ static int fetch_func(const bam1_t *b, void *data)
                         readflag = YMatePair::CT;
                     }
                     else {
-                        unsigned int strand_flags =  b->core.flag & (BAM_FREVERSE & BAM_FMREVERSE);
-                        //This may be invalid if mpos and pos are the same ever
+                        unsigned int strand_flags =  b->core.flag & (BAM_FREVERSE | BAM_FMREVERSE);
+                        //This may be invalid if mpos and pos are the same ever. When this happens currently it gets set to NF
                         if(b->core.pos < b->core.mpos) {
-                            if( strand_flags == (BAM_FREVERSE & BAM_FMREVERSE)) {
+                            if( strand_flags == (BAM_FREVERSE | BAM_FMREVERSE)) {
                                 readflag = YMatePair::RR;
                             }
                             else if(strand_flags == BAM_FREVERSE) {
@@ -109,7 +111,7 @@ static int fetch_func(const bam1_t *b, void *data)
                             }
                         }
                         if(b->core.pos > b->core.mpos) {
-                            if( strand_flags == (BAM_FREVERSE & BAM_FMREVERSE)) {
+                            if( strand_flags == (BAM_FREVERSE | BAM_FMREVERSE)) {
                                 readflag = YMatePair::RR;
                             }
                             else if(strand_flags == BAM_FREVERSE) {
@@ -124,16 +126,33 @@ static int fetch_func(const bam1_t *b, void *data)
                         }
                     }
                 }
+                //check the size to determine if it hits our insertion/deletion cutoffs
+                //only flagging reads with the default Illumina library orientatio ie "normal" reads
+                //note that this requires proper filling of isize and would not work for maq
+                if(readflag == YMatePair::FR) { 
+                    int abs_size = abs(b->core.isize);
+                    if(abs_size < d->lower_bound) {
+                        //assume insertion
+                        readflag = YMatePair::IN;
+                    }
+                    else if(abs_size > d->upper_bound) {
+                        readflag = YMatePair::DL;
+                    }
+                }
+                //if(abs(b->core.isize) < 10000 && readflag != YMatePair::CT) {
+                //    readflag = YMatePair::FR;
+                //}
             }
+                
         }
         //fprintf(stderr,"MF = %i\n",maq_flag);
-        if(d->include_normal || (!(b->core.flag & BAM_FPROPER_PAIR) && (d->flags->empty() || d->flags->find(readflag) != d->flags->end() ))  ) {
+        if(d->include_normal || (!(b->core.flag & BAM_FPROPER_PAIR) && !(readflag == YMatePair::FR || YMatePair::NF) && (d->flags->empty() || d->flags->find(readflag) != d->flags->end() ))  ) {
             //abnormal read
             char *name = bam1_qname(b);
             YMatePair* mate;
             if(d->unpaired_reads->find(name,&mate)) {
                 //then we've already found this read
-                //fprintf(stdout,"Found %#X\t%d\n",mate,m1.flag);
+                //fprintf(stdout,"Found %#X\n",mate);
                 //remove from the hash
                 d->unpaired_reads->erase(name);
 
@@ -199,7 +218,7 @@ static int pileup_func(uint32_t tid, uint32_t pos, int n, const bam_pileup1_t *p
     return 0;
 }
 
-bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags) {
+bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags, int lower_bound, int upper_bound) {
     //Open the region in the bam file
     //Parse appropriately the MF field and put into slots as needed
     //return!
@@ -213,6 +232,8 @@ bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *ref
     d->unpaired_reads = unpaired_reads;
     d->flags = flags;
     d->include_normal = this->includeNormal;
+    d->lower_bound = lower_bound; //by default mark no reads as insertions
+    d->upper_bound = upper_bound;    //max integer value to expect in isize. Could this overflow on some systems? 
     d->in = samopen(filename, "rb", 0);
 
     if (d->in == 0) {

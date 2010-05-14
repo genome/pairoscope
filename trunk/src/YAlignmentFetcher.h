@@ -54,7 +54,7 @@ class YAlignmentFetcher {
         \return whether or not the process was successful
         
          */
-        bool fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags);
+        bool fetchBAMAlignments(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<int> *depth, std::vector<YMatePair*> *mates, hash_map_char<YMatePair*> *unpaired_reads, std::set<int> *flags, int lower_bound, int upper_bound);
 };
 
 #endif

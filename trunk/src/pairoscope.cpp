@@ -54,6 +54,8 @@ static int pairoscope_usage() {
     fprintf(stderr, "         -H INT    Height of the document [768]\n");
     fprintf(stderr, "         -g STRING bam file of exons for gene models\n");
     fprintf(stderr, "         -f STRING list of types of maq flags for display\n");
+    fprintf(stderr, "         -u INT    upper bound of the insert size for a normal read[%d]\n",0x7FFFFFFF);
+    fprintf(stderr, "         -l INT    lower bound of the insert size for a normal read[%d]\n",-1);
 
     return 1;
 }
@@ -73,8 +75,10 @@ int main(int argc, char *argv[])
     char *gene_bam_file = NULL;             //for storing the filename of the annotation bam
     char *flags = NULL;                     //string of comma separated flags for selecting certain reads for display
 
+    int upper_bound = 0x7FFFFFFF, lower_bound = -1;
+
     //get the command line options
-    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:")) >= 0) {
+    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:")) >= 0) {
         switch (c) {
             case 'q': 
                 min_qual = atoi(optarg); 
@@ -103,6 +107,20 @@ int main(int argc, char *argv[])
                 break;    
             case 'f':
                 flags = strdup(optarg); 
+                break;    
+            case 'u':
+                upper_bound = atoi(optarg); 
+                if(upper_bound < 0) {
+                    fprintf(stderr, "Upper bound must be positive\n");
+                    return pairoscope_usage();
+                }
+                break;    
+            case 'l':
+                lower_bound = atoi(optarg); 
+                if(lower_bound < 0) {
+                    fprintf(stderr, "Lower bound must be positive\n");
+                    return pairoscope_usage();
+                }
                 break;    
             default: 
                 return pairoscope_usage();
@@ -175,7 +193,7 @@ int main(int argc, char *argv[])
         bool return_value = false;
         
         //fetch the reads from the bam file
-        return_value = fetcher.fetchBAMAlignments(argv[optind], argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(depth[i]), &mappedReads, &unpaired_reads, &flags_to_fetch);
+        return_value = fetcher.fetchBAMAlignments(argv[optind], argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(depth[i]), &mappedReads, &unpaired_reads, &flags_to_fetch, lower_bound, upper_bound);
         if(return_value) {
             //add the region to the document for display
             document.addRegion((const char*) argv[optind+1], (unsigned) atoi(argv[optind+2]) - buffer, (unsigned int) atoi(argv[optind+3]) + buffer, &(depth[i]));
