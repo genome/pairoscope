@@ -72,7 +72,7 @@ void YDepthView::draw() {
    
     cairo_restore(context);
     
-    cairo_move_to(context, (plotArea.x - bounds.x - offset), bounds.y + bounds.height/2);
+    cairo_move_to(context, (bounds.x + axis_text_bb.height + offset), bounds.y + bounds.height/2);
     cairo_save(context);
         cairo_rotate(context,-1.57079633);
         cairo_rel_move_to(context,-(axis_text_bb.width)/2.0,0);
