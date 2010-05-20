@@ -30,7 +30,7 @@ void YGenomeView::addRegion(const char* refName, unsigned int physicalStart, uns
 
 
 void YGenomeView::addGeneTrack(const char* refName, unsigned int physicalStart, unsigned int physicalStop, std::vector<YTranscript*> *transcripts) {
-    YGeneView *geneView = new YGeneView(context, YRect(), refName, physicalStart, physicalStop, transcripts);
+    YGeneView *geneView = new YGeneView(context, YRect(), refName, physicalStart, physicalStop, transcripts, false);
     addChildView(geneView);
     geneTracks++;
     numberTracks++;

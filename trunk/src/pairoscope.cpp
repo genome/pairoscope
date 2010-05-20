@@ -30,6 +30,7 @@
 #include <cstdlib>
 #include <vector>
 #include <set>
+#include <string>
 #include "YGenomeView.h"
 #include "YMatePair.h"
 #include <zlib.h>
@@ -58,6 +59,7 @@ static int pairoscope_usage() {
     fprintf(stderr, "         -l INT    lower bound of the insert size for a normal read[%d]\n",-1);
     fprintf(stderr, "         -m INT    minimum size of an event to display. Translocations are always displayed[%d]\n",0);
     fprintf(stderr, "         -P FLAG   Only display reads with both mates mapped in the graph\n",0);
+    fprintf(stderr, "         -t STRING list of transcripts to display\n",0);
 
     return 1;
 }
@@ -76,11 +78,12 @@ int main(int argc, char *argv[])
     int doc_width = 1024, doc_height = 768; //default height and weight of the document in pixels
     char *gene_bam_file = NULL;             //for storing the filename of the annotation bam
     char *flags = NULL;                     //string of comma separated flags for selecting certain reads for display
+    char *transcript_request = NULL;               //string of comma separated transcript names for selecting certain transcripts for display
 
     int upper_bound = 0x7FFFFFFF, lower_bound = -1, min_size = 0;
 
     //get the command line options
-    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:P")) >= 0) {
+    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:Pt:")) >= 0) {
         switch (c) {
             case 'q': 
                 min_qual = atoi(optarg); 
@@ -109,6 +112,9 @@ int main(int argc, char *argv[])
                 break;    
             case 'f':
                 flags = strdup(optarg); 
+                break;    
+            case 't':
+                transcript_request = strdup(optarg); 
                 break;    
             case 'u':
                 upper_bound = atoi(optarg); 
@@ -170,10 +176,20 @@ int main(int argc, char *argv[])
         do {
             flags_to_fetch.insert(atoi(flag));
         } while(flag = strtok(NULL,","));
+        free(flags);
     }
 
-    if(flags) {
-        free(flags);
+    //parse the transcript names
+    set<string> transcripts_to_fetch;   //set of transcript names eg NM_002345
+    if(transcript_request) {
+        char *transcript_name = strtok(transcript_request, ",");
+        if(!transcript_name) {
+            transcript_name = transcript_request;
+        }
+        do {
+            transcripts_to_fetch.insert(transcript_name);   //copy in the name
+        } while(transcript_name = strtok(NULL,","));
+        free(transcript_request);
     }
 
     cairo_surface_t *surface;
@@ -223,7 +239,7 @@ int main(int argc, char *argv[])
         if(gene_bam_file ) {
             bool return_value = false;
             YTranscriptFetcher geneFetcher(buffer);
-            return_value = geneFetcher.fetchBAMTranscripts(gene_bam_file, argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(transcripts[i]));
+            return_value = geneFetcher.fetchBAMTranscripts(gene_bam_file, argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(transcripts[i]), &transcripts_to_fetch);
             if(return_value) {
                 document.addGeneTrack((const char*) argv[optind+1], (unsigned) atoi(argv[optind+2]) - buffer, (unsigned int) atoi(argv[optind+3]) + buffer, &(transcripts[i]));
             }

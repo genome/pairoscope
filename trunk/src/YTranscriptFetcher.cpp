@@ -25,6 +25,7 @@ typedef struct {
     samfile_t *in;
     std::vector<YTranscript*> *transcripts;
     hash_map_char<YTranscript*> transcriptNames;    
+    std::set<std::string> *requestedTranscripts;
 } fetch_data_t;
 
 
@@ -39,6 +40,16 @@ static int fetch_func(const bam1_t *b, void *data)
     fetch_data_t *d = (fetch_data_t*) data;
 
     char *name = bam1_qname(b);
+
+    //check if name is requested here
+    if(d->requestedTranscripts != NULL) {
+        //we're doing transcript filtering
+       if(d->requestedTranscripts->find(name) == d->requestedTranscripts->end()) {
+           //transcript wasn't requested
+           return 0;
+       }
+    }
+
     fprintf(stderr,"%s\n",name);
     //TODO Desparately need some error checking on flag retrieval
     char *status = bam_aux2Z(bam_aux_get(b,"YT"));
@@ -94,7 +105,7 @@ static int fetch_func(const bam1_t *b, void *data)
     return 0;
 }
 
-bool YTranscriptFetcher::fetchBAMTranscripts(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<YTranscript*> *transcripts) {
+bool YTranscriptFetcher::fetchBAMTranscripts(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<YTranscript*> *transcripts,std::set<std::string> *transcriptNames) {
     //Open the region in the bam file
 
     fetch_data_t data;
@@ -103,6 +114,7 @@ bool YTranscriptFetcher::fetchBAMTranscripts(const char* filename, const char *r
     d->end = end+buffer;
 
     d->transcripts = transcripts;
+    d->requestedTranscripts = transcriptNames;
     d->in = samopen(filename, "rb", 0);
 
     if (d->in == 0) {
