@@ -12,8 +12,10 @@
 #include "YDepthView.h"
 #include "YView.h"
 #include <vector>
+#include <map>
 #include "YMatePair.h"
 #include "YGeneView.h"
+#include "YColor.h"
 
 //! YGenomeView is a class for drawing read pair information alongside read depth information
 /*! This encapsulates drawing multiple regions as tracks. Each region has a depth track and a barcode track. When multiple regions are drawn the depth tracks are segregated at the top of the document and the "barcode" tracks are at the bottom.
@@ -25,6 +27,7 @@ class YGenomeView : public YView {
     std::vector<YMatePair*> *mates; //!< array of mate pairs to draw \sa YAlignmentFetcher
     void layoutTracks();    //!< determines dimensions of the tracks within the View and aligns them to each other
     bool suppressUnpaired; //!< whether or not to skip drawing reads who do not have their mate displayed in the graph. Includes reads with one unmapped
+    std::map<YMatePair::orientation_flag,YColor> colorMap; //!< stores color associations to the various flags. Intended to eventually allow configurable colors
     
     public:
         //! standard constructor
@@ -34,7 +37,7 @@ class YGenomeView : public YView {
             \param reads array of mate pairs to be drawn
             \returns a new YGenomeView object
         */
-        YGenomeView(cairo_t *cr, YRect initialFrame, std::vector<YMatePair*> *reads) : numberTracks(0), mates(reads), geneTracks(0), YView(cr, initialFrame) { return; }
+        YGenomeView(cairo_t *cr, YRect initialFrame, std::vector<YMatePair*> *reads) : numberTracks(0), mates(reads), geneTracks(0), YView(cr, initialFrame) { setIlluminaColorScheme(); return; }
         
         //! adds a region
         /*! Currently regions are identified by their refName and coordinates. This means display of two regions with different alignment files is not supported. 
@@ -85,6 +88,12 @@ class YGenomeView : public YView {
         
         //! returns whether the view is set to suppress the drawing of reads where both are mates are not mapped within the region 
         bool suppressingUnpairedReads();
+
+        //! configures the colors as default for Illumina paired end libraries
+        void setIlluminaColorScheme();
+        
+        //! configures the colors as default for SOLiD mate pair libraries
+        void setSolidColorScheme();
 };
 
 

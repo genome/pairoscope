@@ -24,7 +24,7 @@ class YMatePair {
         CT, //!< reads mapped across chromosomes 
         DL, //!< reads mapped with distance greater than some cutoff 
         IN, //!< reads mapped with distance smaller than some cutoff 
-        NF = 0, //!< no flag
+        NF = 0, //!< no flag, default for unfound flag color
     };
 
     char* libraryName;  //!< library where these reads came from

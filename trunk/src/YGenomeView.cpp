@@ -220,44 +220,11 @@ void YGenomeView::drawReadPairInViews(YMatePair *mate, YPairView* leftView, YPai
 }
 
 void YGenomeView::setColorForPair(YMatePair* pair) {
-    if(pair->orientation == YMatePair::CT) {
-        //different chromosomes
-        cairo_set_source_rgba (context,0 , .8, .8,.8);
-
-    }
-    else if(pair->orientation == YMatePair::FR) {
-        //Normal mapping
-        //Draw as light gray boxes
-        cairo_set_source_rgba (context,.9 , .9, .9,.8);
-    }
-    else if(pair->orientation == YMatePair::PM) {
-        //one was unplaced
-        //Draw as a yellow box
-        cairo_set_source_rgba (context,.8 , .8, 0,.8);
-    }
-    else if(pair->orientation == YMatePair::FF) {
-        //mapped forward forward
-        cairo_set_source_rgba (context,.8 , 0, 0,.8);
-    }
-    else if(pair->orientation == YMatePair::RF) {
-        //Mapped RF
-        cairo_set_source_rgba (context,0 , .8, 0,.8);
-        
-    }
-    else if(pair->orientation == YMatePair::RR) {
-        //Mapped RR
-        cairo_set_source_rgba (context,0 , 0, .8,.8);
-        
-    }
-    else if(pair->orientation == YMatePair::IN) {
-        //Mapped FR but supports insertion
-        cairo_set_source_rgba (context, 0.8, .25, 0, .8);
-        
-    }
-    else if(pair->orientation == YMatePair::DL) {
-        //Mapped FR but supports deletion
-        cairo_set_source_rgba (context,0.5 , 0, .5,.8);
-        
+    std::map<YMatePair::orientation_flag,YColor>::iterator pos;
+    pos = colorMap.find(pair->orientation);
+    if(pos != colorMap.end()) {
+        YColor color = pos->second;
+        cairo_set_source_rgba(context,color.red,color.green,color.blue,color.alpha); 
     }
     else {
         //for all other reads graph as darker gray
@@ -323,4 +290,17 @@ void YGenomeView::setSuppressUnpairedReads(bool flag) {
 
 bool YGenomeView::suppressingUnpairedReads() {
     return this->suppressUnpaired;
+}
+
+void YGenomeView::setIlluminaColorScheme() {
+    //populate the scheme
+    colorMap.insert(std::make_pair(YMatePair::CT,YColor(0.0, 0.8, 0.8, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::FR,YColor(0.9, 0.9, 0.9, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::PM,YColor(0.8, 0.8, 0.0, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::FF,YColor(0.8, 0.0, 0.0, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::RF,YColor(0.0, 0.8, 0.0, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::RR,YColor(0.0, 0.0, 0.8, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::IN,YColor(0.8, 0.25, 0.0, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::DL,YColor(0.5, 0.0, 0.5, 0.8)));
+    //colorMap.insert(std::make_pair(YMatePair::NF,YColor(0.5, 0.0, 0.5, 0.8)));
 }
