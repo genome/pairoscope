@@ -58,8 +58,9 @@ static int pairoscope_usage() {
     fprintf(stderr, "         -u INT    upper bound of the insert size for a normal read[%d]\n",0x7FFFFFFF);
     fprintf(stderr, "         -l INT    lower bound of the insert size for a normal read[%d]\n",-1);
     fprintf(stderr, "         -m INT    minimum size of an event to display. Translocations are always displayed[%d]\n",0);
-    fprintf(stderr, "         -P FLAG   Only display reads with both mates mapped in the graph\n",0);
-    fprintf(stderr, "         -t STRING list of transcripts to display\n",0);
+    fprintf(stderr, "         -P FLAG   Only display reads with both mates mapped in the graph\n");
+    fprintf(stderr, "         -t STRING list of transcripts to display\n");
+    fprintf(stderr, "         -s FLAG   the bam should be treated as a SOLiD library\n");
 
     return 1;
 }
@@ -79,11 +80,11 @@ int main(int argc, char *argv[])
     char *gene_bam_file = NULL;             //for storing the filename of the annotation bam
     char *flags = NULL;                     //string of comma separated flags for selecting certain reads for display
     char *transcript_request = NULL;               //string of comma separated transcript names for selecting certain transcripts for display
-
+    bool is_solid = false;  //boolean to track whether the input bam is to be treated as SOLiD data
     int upper_bound = 0x7FFFFFFF, lower_bound = -1, min_size = 0;
 
     //get the command line options
-    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:Pt:")) >= 0) {
+    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:Pt:s")) >= 0) {
         switch (c) {
             case 'q': 
                 min_qual = atoi(optarg); 
@@ -113,6 +114,9 @@ int main(int argc, char *argv[])
             case 'f':
                 flags = strdup(optarg); 
                 break;    
+            case 's':
+                is_solid = true;
+                break;
             case 't':
                 transcript_request = strdup(optarg); 
                 break;    
@@ -214,7 +218,7 @@ int main(int argc, char *argv[])
     YRect page(0,0,doc_width,doc_height);
 
     //Create the document on the (whole) page
-    YGenomeView document(cr,page, &mappedReads);
+    YGenomeView document(cr,page, &mappedReads,is_solid);
     document.setSuppressUnpairedReads(suppress_unpaired);
 
     //parse reads for each region

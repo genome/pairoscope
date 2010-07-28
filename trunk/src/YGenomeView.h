@@ -37,7 +37,7 @@ class YGenomeView : public YView {
             \param reads array of mate pairs to be drawn
             \returns a new YGenomeView object
         */
-        YGenomeView(cairo_t *cr, YRect initialFrame, std::vector<YMatePair*> *reads) : numberTracks(0), mates(reads), geneTracks(0), YView(cr, initialFrame) { setIlluminaColorScheme(); return; }
+        YGenomeView(cairo_t *cr, YRect initialFrame, std::vector<YMatePair*> *reads, bool isSolid = false) : numberTracks(0), mates(reads), geneTracks(0), YView(cr, initialFrame) { if(isSolid) { setSolidColorScheme(); } else { setIlluminaColorScheme(); } return; }
         
         //! adds a region
         /*! Currently regions are identified by their refName and coordinates. This means display of two regions with different alignment files is not supported. 

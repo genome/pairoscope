@@ -294,13 +294,26 @@ bool YGenomeView::suppressingUnpairedReads() {
 
 void YGenomeView::setIlluminaColorScheme() {
     //populate the scheme
-    colorMap.insert(std::make_pair(YMatePair::CT,YColor(0.0, 0.8, 0.8, 0.8)));
-    colorMap.insert(std::make_pair(YMatePair::FR,YColor(0.9, 0.9, 0.9, 0.8)));
-    colorMap.insert(std::make_pair(YMatePair::PM,YColor(0.8, 0.8, 0.0, 0.8)));
-    colorMap.insert(std::make_pair(YMatePair::FF,YColor(0.8, 0.0, 0.0, 0.8)));
-    colorMap.insert(std::make_pair(YMatePair::RF,YColor(0.0, 0.8, 0.0, 0.8)));
-    colorMap.insert(std::make_pair(YMatePair::RR,YColor(0.0, 0.0, 0.8, 0.8)));
-    colorMap.insert(std::make_pair(YMatePair::IN,YColor(0.8, 0.25, 0.0, 0.8)));
-    colorMap.insert(std::make_pair(YMatePair::DL,YColor(0.5, 0.0, 0.5, 0.8)));
+    colorMap.insert(std::make_pair(YMatePair::CT,YColor(0.0, 0.8, 0.8, 0.8))); //ctx
+    colorMap.insert(std::make_pair(YMatePair::FR,YColor(0.9, 0.9, 0.9, 0.8))); //normal
+    colorMap.insert(std::make_pair(YMatePair::PM,YColor(0.8, 0.8, 0.0, 0.8))); //partial match
+    colorMap.insert(std::make_pair(YMatePair::FF,YColor(0.8, 0.0, 0.0, 0.8))); //inversion
+    colorMap.insert(std::make_pair(YMatePair::RF,YColor(0.0, 0.8, 0.0, 0.8))); //inversion
+    colorMap.insert(std::make_pair(YMatePair::RR,YColor(0.0, 0.0, 0.8, 0.8))); //inversion
+    colorMap.insert(std::make_pair(YMatePair::IN,YColor(0.8, 0.25, 0.0, 0.8)));//insertion
+    colorMap.insert(std::make_pair(YMatePair::DL,YColor(0.5, 0.0, 0.5, 0.8)));//deletion
+    //colorMap.insert(std::make_pair(YMatePair::NF,YColor(0.5, 0.0, 0.5, 0.8)));
+}
+
+void YGenomeView::setSolidColorScheme() {
+    //populate the scheme
+    colorMap.insert(std::make_pair(YMatePair::CT,YColor(0.0, 0.8, 0.8, 0.8))); //ctx
+    colorMap.insert(std::make_pair(YMatePair::FF,YColor(0.9, 0.9, 0.9, 0.8))); //normal
+    colorMap.insert(std::make_pair(YMatePair::RR,YColor(0.9, 0.9, 0.9, 0.8))); //normal
+    colorMap.insert(std::make_pair(YMatePair::PM,YColor(0.8, 0.8, 0.0, 0.8))); //partial match
+    colorMap.insert(std::make_pair(YMatePair::FR,YColor(0.8, 0.0, 0.0, 0.8))); //inversion
+    colorMap.insert(std::make_pair(YMatePair::RF,YColor(0.0, 0.8, 0.0, 0.8))); //inversion
+    colorMap.insert(std::make_pair(YMatePair::IN,YColor(0.8, 0.25, 0.0, 0.8)));//insertion
+    colorMap.insert(std::make_pair(YMatePair::DL,YColor(0.5, 0.0, 0.5, 0.8)));//deletion
     //colorMap.insert(std::make_pair(YMatePair::NF,YColor(0.5, 0.0, 0.5, 0.8)));
 }
