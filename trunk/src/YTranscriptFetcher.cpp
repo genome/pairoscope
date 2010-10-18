@@ -42,7 +42,7 @@ static int fetch_func(const bam1_t *b, void *data)
     char *name = bam1_qname(b);
 
     //check if name is requested here
-    if(d->requestedTranscripts != NULL) {
+    if(!d->requestedTranscripts->empty()) {
         //we're doing transcript filtering
        if(d->requestedTranscripts->find(name) == d->requestedTranscripts->end()) {
            //transcript wasn't requested
