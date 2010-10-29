@@ -36,7 +36,7 @@ void YGeneView::draw() {
     //FIXME Find font extents here, convert to local coordinates, then assign transcript sizes
 
     //Set font up
-    cairo_select_font_face(context, "Serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
+    cairo_select_font_face(context, "Times", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
     cairo_set_font_size(context, fontSize);	//hardcoding for now
     cairo_font_extents_t font_extents;
     cairo_font_extents(context,&font_extents);

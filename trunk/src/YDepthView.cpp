@@ -49,7 +49,7 @@ void YDepthView::draw() {
     cairo_save(context);
     
         cairo_identity_matrix(context);	//scale to actual size of document
-        cairo_select_font_face(context, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
+        cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
         cairo_set_font_size(context, fontSize);	//hardcoding for now
         cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
         cairo_show_text(context, maxTextLabel);
@@ -65,7 +65,7 @@ void YDepthView::draw() {
     cairo_save(context);
     
         cairo_identity_matrix(context);	//scale to actual size of document
-        cairo_select_font_face(context, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
+        cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
         cairo_set_font_size(context, fontSize);	//hardcoding for now
         cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
         cairo_show_text(context, "0");
@@ -78,7 +78,7 @@ void YDepthView::draw() {
         cairo_rel_move_to(context,-(axis_text_bb.width)/2.0,0);
         cairo_identity_matrix(context);	//scale to actual size of document
         cairo_rotate(context,-1.57079633);
-        cairo_select_font_face(context, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
+        cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
         cairo_set_font_size(context, fontSize);	//hardcoding for now
         cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
         cairo_show_text(context, axisTextLabel);
@@ -171,7 +171,7 @@ void YDepthView::calculateAxes() {
     cairo_save(context);
     cairo_identity_matrix(context);
     //Here is some font related crap
-    cairo_select_font_face(context, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
+    cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
     cairo_set_font_size(context, fontSize);	//hardcoding for now
 
     cairo_text_extents(context, maxTextLabel, &max_text_bb);	//this grabs the bounds of the number string

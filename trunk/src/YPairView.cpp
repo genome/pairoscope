@@ -83,7 +83,7 @@ void YPairView::calculateAxes() {
     cairo_save(context);
     cairo_identity_matrix(context);
         //Here is some font related crap
-    cairo_select_font_face(context, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
+    cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
     cairo_set_font_size(context, fontSize);	//hardcoding for now
     
         
@@ -132,7 +132,7 @@ void YPairView::draw() {
     //preserve original scaling etc and draw the max label
     cairo_save(context);
     cairo_identity_matrix(context);	//scale to square pixels
-    cairo_select_font_face(context, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(context, fontSize);
     cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
     cairo_show_text(context, startLabelText);
@@ -145,7 +145,7 @@ void YPairView::draw() {
     //preserve original scaling etc and draw the max label
     cairo_save(context);
     //Here is some font related crap
-    cairo_select_font_face(context, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
+    cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
     cairo_set_font_size(context, fontSize);
     cairo_identity_matrix(context);	//scale to actual size of document
     cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
