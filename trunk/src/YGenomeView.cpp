@@ -7,6 +7,8 @@
 
 #include "YGenomeView.h"
 #include <iostream>
+#include <string.h>
+#include <stdio.h>
 
 void YGenomeView::addRegion(const char* refName, unsigned int physicalStart, unsigned int physicalStop, std::vector<int> *depth) {
     //each region will have two tracks

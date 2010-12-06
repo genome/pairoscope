@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <math.h>
 #include <iostream>
+#include <string.h>
+#include <stdio.h>
 
 YDepthView::YDepthView(cairo_t *cr, YRect initialFrame, const char *refName, std::vector<int> *depthVector, double fontSize, double axisOffset) : maxTextLabel(NULL), axisTextLabel(NULL), YView(cr,initialFrame), depth(depthVector), refName(NULL) {
     int length = strlen(refName);

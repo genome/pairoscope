@@ -7,6 +7,8 @@
 
 #include "YGeneView.h"
 #include <string> //finally getting around to using C++ strings
+#include <string.h> //still necessary
+#include <stdio.h>
 
 YGeneView::YGeneView(cairo_t *cr, YRect initialFrame, const char *refName, unsigned int physicalStart, unsigned int physicalStop, std::vector<YTranscript*> *transcriptVector, bool topTranscript, double fontSize) : YView(cr,initialFrame), transcripts(transcriptVector), refName(NULL), physicalStart(physicalStart), physicalStop(physicalStop) {
     this->plotArea = initialFrame;

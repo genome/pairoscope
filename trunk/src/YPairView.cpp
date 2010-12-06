@@ -6,6 +6,8 @@ $URL$
 ----------------------------------*/
 
 #include <string>
+#include <string.h>
+#include <cstdlib>
 #include <stdio.h>
 #include "YPairView.h"
 
