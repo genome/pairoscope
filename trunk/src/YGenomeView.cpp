@@ -141,14 +141,11 @@ void YGenomeView::draw() {
             YPairView *leftPairView = findViewForLocation((*i)->leftRefName,(*i)->leftReadPosition);
             YPairView *rightPairView = NULL;
             if((*i)->rightRefName) {
-                if(strcmp((*i)->rightRefName, (*i)->leftRefName) != 0) {
-                    rightPairView = findViewForLocation((*i)->rightRefName, (*i)->rightReadPosition);
+                rightPairView = findViewForLocation((*i)->rightRefName, (*i)->rightReadPosition);
+                if(strcmp((*i)->rightRefName, (*i)->leftRefName) != 0 && rightPairView) {
                     if(rightPairView) {
                         fprintf(stderr,"%s\t%d\t%s\t%d\n",(*i)->leftRefName,(*i)->leftReadPosition, (*i)->rightRefName, (*i)->rightReadPosition);
                     }
-                }
-                else {
-                    rightPairView = leftPairView;
                 }
             }
             if(leftPairView && (!suppressUnpaired || rightPairView)) {
