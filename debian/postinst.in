@@ -16,7 +16,7 @@
 # the debian-policy package
 
 
-EXECUTABLES="bassovac"
+EXECUTABLES="pairoscope"
 PRIORITY=@DEFAULT_ETC_ALTERNATIVES_PRIORITY@
 
 set -e
