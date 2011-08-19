@@ -15,7 +15,7 @@ $URL$
 using std::stringstream;
 
 YPairView::YPairView(cairo_t *cr, YRect initialFrame, const char *refName, unsigned int physicalStart, unsigned int physicalStop, double readHeight, double fontSize, double axisOffset)
-    : YView(cr, initialFrame, false, true), refName(NULL), startLabelText(NULL), stopLabelText(NULL)
+    : YView(cr, initialFrame, false, true), refName(NULL), startLabelText(""), stopLabelText("")
 {
     int length = strlen(refName);
     this->refName = new char[length + 1]; //create space for a copy of the refName
