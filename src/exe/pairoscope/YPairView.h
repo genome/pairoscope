@@ -10,6 +10,7 @@
 
 #include "YRect.h"
 #include "YView.h"
+#include <string>
 #include <vector>
 
 //! YPairView is a class for drawing read pairs in a "barcode" style
@@ -23,24 +24,13 @@ class YPairView : public YView {
     
     YRect plotArea;	//!< The region where the pairs will be plotted (basically what's left after drawing axes)
     cairo_text_extents_t start_text_bb;//!< variable to store the bounding boxes of the start axis label
-    char *startLabelText; //!< string containing the starting coordinate text label
+    std::string startLabelText; //!< string containing the starting coordinate text label
     cairo_text_extents_t stop_text_bb; //!< variable to store the bounding boxes of the stop axis label
-    char *stopLabelText; //!< string containing the ending coordinate text label
+    std::string stopLabelText; //!< string containing the ending coordinate text label
     
     double readHeight; //!< height of reads in view's own coordinates
     double axisOffset; //!< distance in screen coordinates between the beginning of the plotArea and the axis labels
     double fontSize;   //!< size of the font in screen coordinates
-    //! sets up the text label for the start position
-    /*!
-        \param label string to label the start position with
-    */
-    void setStartLabelText(char* label);
-        
-    //! sets up the text label for the stop position
-    /*!
-    \param label string to label the stop position with
-     */
-    void setStopLabelText(char* label);
 
 public:
     

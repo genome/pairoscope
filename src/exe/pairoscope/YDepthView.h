@@ -14,6 +14,7 @@
 
 #include "YRect.h"
 #include "YView.h"
+#include <string>
 #include <vector>
 
 //! YDepthView graphs read depth across a region
@@ -21,7 +22,7 @@
 
 class YDepthView : public YView {
     std::vector<int> *depth;        //!< array of a depth value for every bp in the region
-    char *refName;                 //!< name of the chromosome/contig
+    std::string refName;                 //!< name of the chromosome/contig
 
     unsigned int displayMaximumDepth;     //!< maximum value of y-axis
     
@@ -31,11 +32,10 @@ class YDepthView : public YView {
 
    
     cairo_text_extents_t max_text_bb;   //!< the boundaries of the maximum y-value text label
-    char *maxTextLabel;                 //!< the maximum y-value text label
+    std::string maxTextLabel;                 //!< the maximum y-value text label
     cairo_text_extents_t min_text_bb;   //!< the boundaries of the minimum y-value text label (always 0)
-    char *minTextLabel;                 //!< the minimum y-value text label (always 0)
     cairo_text_extents_t axis_text_bb;   //!< the boundaries of the minimum y-value text label (always 0)
-    char *axisTextLabel;                 //!< the minimum y-value text label (always 0)
+    std::string axisTextLabel;                 //!< the minimum y-value text label (always 0)
     
     double fontSize;
     double axisOffset;

@@ -6,12 +6,17 @@ $URL$
 ----------------------------------*/
 
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <cstdlib>
-#include <stdio.h>
+#include <sstream>
+#include <cstdio>
 #include "YPairView.h"
 
-YPairView::YPairView(cairo_t *cr, YRect initialFrame, const char *refName, unsigned int physicalStart, unsigned int physicalStop, double readHeight, double fontSize, double axisOffset) : refName(NULL), startLabelText(NULL), stopLabelText(NULL), YView(cr, initialFrame, false, true) {
+using std::stringstream;
+
+YPairView::YPairView(cairo_t *cr, YRect initialFrame, const char *refName, unsigned int physicalStart, unsigned int physicalStop, double readHeight, double fontSize, double axisOffset)
+    : YView(cr, initialFrame, false, true), refName(NULL), startLabelText(NULL), stopLabelText(NULL)
+{
     int length = strlen(refName);
     this->refName = new char[length + 1]; //create space for a copy of the refName
     strcpy(this->refName, refName);
@@ -29,12 +34,6 @@ YPairView::~ YPairView() {
     if(refName) {
         delete[] refName;
     }
-    if(startLabelText) {
-        free(startLabelText);
-    }
-    if(stopLabelText) {
-        free(stopLabelText);
-    }
 }    
     
 YPoint YPairView::topPointOfRead(double coordinate) {
@@ -48,16 +47,16 @@ YPoint YPairView::bottomPointOfRead(double coordinate) {
 void YPairView::setPhysicalStart(unsigned int start) {
     physicalStart = start;
     setBounds(YRect(0,0,physicalStop-physicalStart,1));
-    char *label;
-    asprintf(&label, "%s:%d", this->refName, start); //create a new label string, further memory management is handled by the class
-    setStartLabelText(label);
+    stringstream label;
+    label << this->refName << ":" << start;
+    startLabelText = label.str();
 }
 void YPairView::setPhysicalStop(unsigned int stop) {
     physicalStop = stop;
     setBounds(YRect(0,0,physicalStop-physicalStart,1));
-    char *label;
-    asprintf(&label, "%s:%d", this->refName, stop);   //create a new label string, further memory management is handled by the class
-    setStopLabelText(label);
+    stringstream label;
+    label << this->refName << ":" << stop;
+    stopLabelText = label.str();
 }
 
 void YPairView::pointInParentCoordinates(YPoint *point) {
@@ -89,8 +88,8 @@ void YPairView::calculateAxes() {
     cairo_set_font_size(context, fontSize);	//hardcoding for now
     
         
-    cairo_text_extents(context, startLabelText, &start_text_bb);	//this grabs the bounds of the start string
-    cairo_text_extents(context, stopLabelText, &stop_text_bb);	//this grabs the bounds of the stop string
+    cairo_text_extents(context, startLabelText.c_str(), &start_text_bb);	//this grabs the bounds of the start string
+    cairo_text_extents(context, stopLabelText.c_str(), &stop_text_bb);	//this grabs the bounds of the stop string
     
         
     //this is sort of underhanded, but set up the transformation here
@@ -137,7 +136,7 @@ void YPairView::draw() {
     cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(context, fontSize);
     cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
-    cairo_show_text(context, startLabelText);
+    cairo_show_text(context, startLabelText.c_str());
 
     cairo_restore(context);
     
@@ -151,7 +150,7 @@ void YPairView::draw() {
     cairo_set_font_size(context, fontSize);
     cairo_identity_matrix(context);	//scale to actual size of document
     cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
-    cairo_show_text(context, stopLabelText);
+    cairo_show_text(context, stopLabelText.c_str());
 
     cairo_restore(context);
     
@@ -180,22 +179,7 @@ void YPairView::draw() {
 }
 
 
-void YPairView::setStartLabelText(char* label) {
-    if(startLabelText && startLabelText != label) {
-        free(startLabelText);
-    }
-    startLabelText = label;
-}
-
-void YPairView::setStopLabelText(char* label) {
-    if(stopLabelText && stopLabelText != label) {
-        free(stopLabelText);
-    }
-    stopLabelText = label;
-}
-
 YRect YPairView::plotAreaInParentCoordinates() {
-    cairo_matrix_t undo_matrix;
     YRect returnPlotArea = this->plotArea;
     YView::rectInParentCoordinates(&returnPlotArea);
     return returnPlotArea;
@@ -207,6 +191,7 @@ bool YPairView::setPlotAreaInParentCoordinates(YRect newPlotArea) {
         cairo_matrix_transform_point(&conversion_matrix, &newPlotArea.x, &newPlotArea.y);
         cairo_matrix_transform_distance(&conversion_matrix, &newPlotArea.width, &newPlotArea.height);
         this->plotArea = newPlotArea;
+        return true;
     }
     else {
         return false;

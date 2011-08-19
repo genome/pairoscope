@@ -245,7 +245,6 @@ bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *ref
         return 0;
     }
     bam_index_t *idx;
-    bam_plbuf_t *buf;
     idx = bam_index_load(filename); // load BAM index
     if (idx == 0) {
         fprintf(stderr, "BAM indexing file is not available.\n");

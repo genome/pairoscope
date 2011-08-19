@@ -43,16 +43,16 @@ void YGeneView::draw() {
     cairo_font_extents_t font_extents;
     cairo_font_extents(context,&font_extents);
     double font_height = font_extents.ascent + font_extents.descent;    //try to get maximum font height for spacing. May be imperfect
-    fprintf(stderr, "font height: %lf\n",font_height); 
+    fprintf(stderr, "font height: %f\n",font_height); 
     double dummy = 0;
     cairo_device_to_user_distance(context, &dummy, &font_height);
-    fprintf(stderr, "scaled font height: %lf\n",font_height); 
+    fprintf(stderr, "scaled font height: %f\n",font_height); 
 
     std::vector<YTranscript*> *transcriptsToGraph;
     if(topTranscript) {
         transcriptsToGraph = new std::vector<YTranscript*>;
         YTranscript *selectedTranscript = NULL;
-        for(int j = 0; j < transcripts->size(); ++j) {
+        for(size_t j = 0; j < transcripts->size(); ++j) {
             YTranscript *candidateTranscript = (*transcripts)[j];
 
             if(selectedTranscript == NULL) {
@@ -186,7 +186,6 @@ void YGeneView::calculateAxes() {
     
 YRect YGeneView::plotAreaInParentCoordinates() {
     //TODO FOR THE LOVE OF CHRIS, MAKE THIS A BASE CLASS ALREADY
-    cairo_matrix_t undo_matrix;
     YRect returnPlotArea = this->plotArea;
     YView::rectInParentCoordinates(&returnPlotArea);
     return returnPlotArea;
@@ -199,6 +198,7 @@ bool YGeneView::setPlotAreaInParentCoordinates(YRect newPlotArea) {
         cairo_matrix_transform_point(&conversion_matrix, &newPlotArea.x, &newPlotArea.y);
         cairo_matrix_transform_distance(&conversion_matrix, &newPlotArea.width, &newPlotArea.height);
         this->plotArea = newPlotArea;
+        return true;
     }
     else {
         return false;

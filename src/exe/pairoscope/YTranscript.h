@@ -29,7 +29,7 @@ class YTranscript {
         int totalNumberOfStructures;    //!< total number of structures, not just the ones in the region
     
     //! default constructor for YTranscript
-        YTranscript() : gene(NULL), name(NULL), refName(NULL), strand(0), length(0), status(NULL) {}
+        YTranscript() : gene(NULL), name(NULL), refName(NULL), status(NULL), strand(0), length(0), totalNumberOfStructures(0) {}
     //! destructor for YTranscript
         ~YTranscript() { 
             if(gene) { delete[] gene; }

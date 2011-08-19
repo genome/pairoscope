@@ -6,9 +6,10 @@
   ----------------------------------*/
 
 #include "YGenomeView.h"
+#include <cstddef>
 #include <iostream>
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 
 void YGenomeView::addRegion(const char* refName, unsigned int physicalStart, unsigned int physicalStop, std::vector<int> *depth) {
     //each region will have two tracks
@@ -81,7 +82,7 @@ void YGenomeView::layoutTracks() {
         }
         currentView = currentView->getSiblingView();
     }
-    for(int i = numberNonGeneTracks; i < numberTracks; ++i) {
+    for(size_t i = numberNonGeneTracks; i < numberTracks; ++i) {
         currentView->setFrame(YRect(frame.x, frame.y + trackHeight*i+spacing*i,frame.width,trackHeight));
         currentView->setBounds(YRect(frame.x, frame.y + trackHeight*i+spacing*i,frame.width,trackHeight));
         ((YGeneView*) currentView)->calculateAxes();
@@ -114,7 +115,7 @@ void YGenomeView::layoutTracks() {
         ((YPairView*) currentView)->setPlotAreaInParentCoordinates(tempArea);
         currentView = currentView->getSiblingView();
     }
-    for(int i = numberNonGeneTracks; i < numberTracks; ++i) {
+    for(size_t i = numberNonGeneTracks; i < numberTracks; ++i) {
         YRect tempArea = ((YGeneView*) currentView)->plotAreaInParentCoordinates();
         tempArea.x=best_xstart;
         tempArea.width = best_width;

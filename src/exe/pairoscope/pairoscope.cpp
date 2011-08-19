@@ -26,6 +26,7 @@
 //TODO Allow configuration file
 
 
+#include <cstddef> // size_t
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -179,7 +180,7 @@ int main(int argc, char *argv[])
         }
         do {
             flags_to_fetch.insert(atoi(flag));
-        } while(flag = strtok(NULL,","));
+        } while((flag = strtok(NULL,",")) != NULL);
         free(flags);
     }
 
@@ -192,7 +193,7 @@ int main(int argc, char *argv[])
         }
         do {
             transcripts_to_fetch.insert(transcript_name);   //copy in the name
-        } while(transcript_name = strtok(NULL,","));
+        } while((transcript_name = strtok(NULL,",")) != NULL);
         free(transcript_request);
     }
 
@@ -248,7 +249,7 @@ int main(int argc, char *argv[])
                 document.addGeneTrack((const char*) argv[optind+1], (unsigned) atoi(argv[optind+2]) - buffer, (unsigned int) atoi(argv[optind+3]) + buffer, &(transcripts[i]));
             }
             else {               
-                for(int j = 0; j != transcripts.size(); j++) {
+                for(size_t j = 0; j != transcripts.size(); j++) {
                     transcript_buffer buffer = transcripts[j];
                     for( transcript_buffer::iterator itr = buffer.begin(); itr != buffer.end(); ++itr) {
                         delete *itr;
@@ -270,7 +271,7 @@ int main(int argc, char *argv[])
         delete *itr;
     }
     //delete transcripts
-    for(int j = 0; j != transcripts.size(); j++) {
+    for(size_t j = 0; j != transcripts.size(); j++) {
         transcript_buffer buffer = transcripts[j];
         for( transcript_buffer::iterator itr = buffer.begin(); itr != buffer.end(); ++itr) {
             delete *itr;

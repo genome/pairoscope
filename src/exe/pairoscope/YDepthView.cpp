@@ -11,31 +11,22 @@
 
 #include "YDepthView.h"
 #include <algorithm>
-#include <math.h>
+#include <cmath>
+#include <cstring>
 #include <iostream>
-#include <string.h>
-#include <stdio.h>
+#include <sstream>
 
-YDepthView::YDepthView(cairo_t *cr, YRect initialFrame, const char *refName, std::vector<int> *depthVector, double fontSize, double axisOffset) : maxTextLabel(NULL), axisTextLabel(NULL), YView(cr,initialFrame), depth(depthVector), refName(NULL) {
-    int length = strlen(refName);
-    this->refName = new char[length + 1]; //create space for a copy of the refName
-    strcpy(this->refName, refName);
-    asprintf(&this->axisTextLabel,"Depth for %s", this->refName);
+using std::stringstream;
+
+YDepthView::YDepthView(cairo_t *cr, YRect initialFrame, const char *refName, std::vector<int> *depthVector, double fontSize, double axisOffset)
+    : YView(cr,initialFrame), depth(depthVector), refName(refName)
+{
+    axisTextLabel = "Depth for " + this->refName;
     this->fontSize = fontSize;
     this->axisOffset = axisOffset;
-    
 }
 
 YDepthView::~YDepthView() {
-    if(refName) {
-        delete[] refName;
-    }
-    if(maxTextLabel) {
-        free(maxTextLabel);
-    }
-    if(axisTextLabel) {
-        free(axisTextLabel);
-    }
 }
 
 void YDepthView::draw() {
@@ -54,7 +45,7 @@ void YDepthView::draw() {
         cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
         cairo_set_font_size(context, fontSize);	//hardcoding for now
         cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
-        cairo_show_text(context, maxTextLabel);
+        cairo_show_text(context, maxTextLabel.c_str());
    
     cairo_restore(context);
     
@@ -83,7 +74,7 @@ void YDepthView::draw() {
         cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
         cairo_set_font_size(context, fontSize);	//hardcoding for now
         cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
-        cairo_show_text(context, axisTextLabel);
+        cairo_show_text(context, axisTextLabel.c_str());
     cairo_restore(context);    
     
     //Now draw the axes 
@@ -142,11 +133,10 @@ void YDepthView::draw() {
 }
 
 void YDepthView::setDisplayMaximumDepth(unsigned int maxDepth) {
-    this->displayMaximumDepth = maxDepth;
-    if(maxTextLabel) {
-        free(maxTextLabel);
-    }
-    asprintf(&maxTextLabel,"%d",this->displayMaximumDepth);	//This converts the integer number of the maximum to a string
+    displayMaximumDepth = maxDepth;
+    stringstream label;
+    label << displayMaximumDepth;
+    maxTextLabel = label.str();
 }
 
 void YDepthView::setAutoScale(bool autoScale) {
@@ -181,10 +171,10 @@ void YDepthView::calculateAxes() {
     cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
     cairo_set_font_size(context, fontSize);	//hardcoding for now
 
-    cairo_text_extents(context, maxTextLabel, &max_text_bb);	//this grabs the bounds of the number string
+    cairo_text_extents(context, maxTextLabel.c_str(), &max_text_bb);	//this grabs the bounds of the number string
     cairo_text_extents(context, "0", &min_text_bb);
     //cairo_rotate(context,-1.57079633);
-    cairo_text_extents(context, axisTextLabel, &axis_text_bb);
+    cairo_text_extents(context, axisTextLabel.c_str(), &axis_text_bb);
     cairo_restore(context);
     
     prepareForRender();
@@ -225,7 +215,6 @@ void YDepthView::calculateAxes() {
 }
 
 YRect YDepthView::plotAreaInParentCoordinates() {
-    cairo_matrix_t undo_matrix;
     YRect returnPlotArea = this->plotArea;
     YView::rectInParentCoordinates(&returnPlotArea);
     return returnPlotArea;
@@ -237,6 +226,7 @@ bool YDepthView::setPlotAreaInParentCoordinates(YRect newPlotArea) {
         cairo_matrix_transform_point(&conversion_matrix, &newPlotArea.x, &newPlotArea.y);
         cairo_matrix_transform_distance(&conversion_matrix, &newPlotArea.width, &newPlotArea.height);
         this->plotArea = newPlotArea;
+        return true;
     }
     else {
         return false;
