@@ -159,11 +159,16 @@ void YDepthView::calculateAxes() {
     //store the available space for the actual graph somewhere 
     if(autoScale) {
         int max = 0;
-        if(depth->size() == 1) {
-            max = depth->at(0); //for some crazy reason I don't understand. Max element is crashing when there is only a single element
+        if(depth->empty()) {
+            max = 1;
         }
         else {
-            max = *max_element(depth->begin(),depth->end());
+            if(depth->size() == 1) {
+                max = depth->at(0); //for some crazy reason I don't understand. Max element is crashing when there is only a single element
+            }
+            else {
+                max = *max_element(depth->begin(),depth->end());
+            }
         }
         setDisplayMaximumDepth(max);
     }
