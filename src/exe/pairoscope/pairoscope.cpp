@@ -32,6 +32,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include "version.h"
 #include "YGenomeView.h"
 #include "YMatePair.h"
 #include <zlib.h>
@@ -45,6 +46,7 @@
 using namespace std;
 
 static int pairoscope_usage() {
+    fprintf(stderr, "pairoscope version %s (commit %s)\n", __g_prog_version, __g_commit_hash); 
     fprintf(stderr, "\n");
     fprintf(stderr, "Usage:   pairoscope [options] <align.bam> <chr> <start> <end> <align2.bam> <chr2> <start2> <end2> \n\n");
     fprintf(stderr, "Options: -q INT    minimum mapping quality [0]\n");
