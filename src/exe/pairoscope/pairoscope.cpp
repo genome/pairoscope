@@ -232,7 +232,12 @@ int main(int argc, char *argv[])
         return_value = fetcher.fetchBAMAlignments(argv[optind], argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(depth[i]), &mappedReads, &unpaired_reads, &flags_to_fetch, lower_bound, upper_bound, min_size);
         if(return_value) {
             //add the region to the document for display
-            document.addRegion((const char*) argv[optind+1], (unsigned) atoi(argv[optind+2]) - buffer, (unsigned int) atoi(argv[optind+3]) + buffer, &(depth[i]));
+            unsigned int buffered_start = 0;
+            if( atoi(argv[optind+2]) - buffer > 0 ) {
+                buffered_start =  atoi(argv[optind+2]) - buffer;
+            }
+            //overflow is unlikely so avoiding a check here
+            document.addRegion((const char*) argv[optind+1], buffered_start, (unsigned int) atoi(argv[optind+3]) + buffer, &(depth[i]));
         }
         else {
             for( vector<YMatePair*>::iterator itr = mappedReads.begin(); itr != mappedReads.end(); ++itr) {
