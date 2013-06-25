@@ -56,11 +56,6 @@ static int fetch_func(const bam1_t *b, void *data)
     char *source = bam_aux2Z(bam_aux_get(b,"YS"));
     int length = bam_aux2i(bam_aux_get(b,"HI"));
     
-    //only let through reviewed genbank transcripts
-    if(!(strcmp(source, "genbank") == 0) && d->requestedTranscripts->empty()) {
-        return 0;
-    }
-    
     YTranscript* transcript;
     
     YTranscriptSubStructure structure;
