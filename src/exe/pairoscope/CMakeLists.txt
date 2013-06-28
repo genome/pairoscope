@@ -5,6 +5,8 @@ project(pairoscope)
 set(SOURCES 
     YAlignmentFetcher.cpp
     YAlignmentFetcher.h
+    YBDConfig.h
+    YBDConfig.cpp
     YColor.h
     YDepthView.cpp
     YDepthView.h
