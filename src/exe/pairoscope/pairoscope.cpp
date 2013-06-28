@@ -28,6 +28,7 @@
 
 #include <cstddef> // size_t
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <vector>
 #include <set>
@@ -42,6 +43,7 @@
 #include <errno.h>
 #include "YAlignmentFetcher.h"
 #include "YTranscriptFetcher.h"
+#include "YBDConfig.h"
 
 using namespace std;
 
@@ -64,6 +66,7 @@ static int pairoscope_usage() {
     fprintf(stderr, "         -P FLAG   Only display reads with both mates mapped in the graph\n");
     fprintf(stderr, "         -t STRING list of transcripts to display\n");
     fprintf(stderr, "         -s FLAG   the bam should be treated as a SOLiD library\n");
+    fprintf(stderr, "         -c STRING a BreakDancer config file to help flag abnormal read pairs\n");
 
     return 1;
 }
@@ -85,9 +88,10 @@ int main(int argc, char *argv[])
     char *transcript_request = NULL;               //string of comma separated transcript names for selecting certain transcripts for display
     bool is_solid = false;  //boolean to track whether the input bam is to be treated as SOLiD data
     int upper_bound = 0x7FFFFFFF, lower_bound = -1, min_size = 0;
+    char *bdconfig = NULL;
 
     //get the command line options
-    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:Pt:s")) >= 0) {
+    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:Pt:sc:")) >= 0) {
         switch (c) {
             case 'q': 
                 min_qual = atoi(optarg); 
@@ -147,6 +151,9 @@ int main(int argc, char *argv[])
             case 'P':
                 suppress_unpaired = true;   
                 break; 
+            case 'c':
+                bdconfig = optarg;
+                break;
             default: 
                 return pairoscope_usage();
         }
@@ -160,6 +167,14 @@ int main(int argc, char *argv[])
     }
     
     int regions = (argc-optind) / 4;    //calculate the number of regions
+
+    YBDConfig *config = NULL;
+    //parse BDconfig 
+    if(bdconfig) {
+        ifstream config_stream(bdconfig);
+        config = new YBDConfig(config_stream);
+    }
+
     
     //define types to simplify the actual vector declarations
     typedef vector<int> depth_buffer;   
@@ -290,7 +305,9 @@ int main(int argc, char *argv[])
     }
     cairo_surface_destroy (surface);
 
-
+    if(config) {
+        delete config;
+    }
 
     return EXIT_SUCCESS;
 }
