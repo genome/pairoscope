@@ -32,6 +32,7 @@ typedef struct {
     int upper_bound;
     int minimum_size;
     YBDConfig *config;
+    int stddev_cutoff;
     bam_plbuf_t *buf;
 } pileup_data_t;
 
@@ -134,8 +135,27 @@ static int fetch_func(const bam1_t *b, void *data)
                 int abs_size = abs(b->core.isize);
                 if(d->config) {
                     //grab readgroup
+                    if(uint8_t* tmp = bam_aux_get(b, "RG")) {
+                        std::string readgroup(bam_aux2Z(tmp));
+                        double rg_stddev = d->config->stddev_for_readgroup(readgroup);
+                        double rg_mean = d->config->mean_for_readgroup(readgroup);
+                        double calculated_lower = rg_mean - d->stddev_cutoff * rg_stddev;
+                        if(calculated_lower < 0) {
+                            calculated_lower = 0;
+                        }
+                        double calculated_upper = rg_mean + d->stddev_cutoff * rg_stddev;
+                        if(abs_size > calculated_upper) {
+                            readflag = YMatePair::DL;
+                        }
+                        if(abs_size < calculated_lower) {
+                            readflag = YMatePair::IN;
+                        }
+                    }
+
+
                     //compare to Config stats via some sort of sd
                     //set flags
+                    //
 
                 }
                 if(readflag == YMatePair::FR) { 
@@ -246,6 +266,7 @@ bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *ref
     d->upper_bound = upper_bound;    //max integer value to expect in isize. Could this overflow on some systems? 
     d->minimum_size = minimum_size;
     d->config = config;
+    d->stddev_cutoff = stddev;
     d->in = samopen(filename, "rb", 0);
 
     if (d->in == 0) {
