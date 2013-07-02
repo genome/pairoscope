@@ -133,7 +133,7 @@ static int fetch_func(const bam1_t *b, void *data)
                 //only flagging reads with the default Illumina library orientatio ie "normal" reads
                 //note that this requires proper filling of isize and would not work for maq
                 int abs_size = abs(b->core.isize);
-                if(d->config) {
+                if(d->config && readflag == YMatePair::FR) {
                     //grab readgroup
                     if(uint8_t* tmp = bam_aux_get(b, "RG")) {
                         std::string readgroup(bam_aux2Z(tmp));
@@ -146,8 +146,7 @@ static int fetch_func(const bam1_t *b, void *data)
                         double calculated_upper = rg_mean + d->stddev_cutoff * rg_stddev;
                         if(abs_size > calculated_upper) {
                             readflag = YMatePair::DL;
-                        }
-                        if(abs_size < calculated_lower) {
+                        } else if(abs_size < calculated_lower) {
                             readflag = YMatePair::IN;
                         }
                     }
@@ -159,11 +158,11 @@ static int fetch_func(const bam1_t *b, void *data)
 
                 }
                 if(readflag == YMatePair::FR) { 
-                    if(abs_size < d->lower_bound) {
+                    if(d->lower_bound != -1 && abs_size < d->lower_bound) {
                         //assume insertion
                         readflag = YMatePair::IN;
                     }
-                    else if(abs_size > d->upper_bound) {
+                    else if(d->upper_bound != -1 && abs_size > d->upper_bound) {
                         readflag = YMatePair::DL;
                     }
                 }
