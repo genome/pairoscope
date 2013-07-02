@@ -31,6 +31,7 @@ typedef struct {
     int lower_bound;
     int upper_bound;
     int minimum_size;
+    YBDConfig *config;
     bam_plbuf_t *buf;
 } pileup_data_t;
 
@@ -131,6 +132,12 @@ static int fetch_func(const bam1_t *b, void *data)
                 //only flagging reads with the default Illumina library orientatio ie "normal" reads
                 //note that this requires proper filling of isize and would not work for maq
                 int abs_size = abs(b->core.isize);
+                if(d->config) {
+                    //grab readgroup
+                    //compare to Config stats via some sort of sd
+                    //set flags
+
+                }
                 if(readflag == YMatePair::FR) { 
                     if(abs_size < d->lower_bound) {
                         //assume insertion
@@ -238,6 +245,7 @@ bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *ref
     d->lower_bound = lower_bound; //by default mark no reads as insertions
     d->upper_bound = upper_bound;    //max integer value to expect in isize. Could this overflow on some systems? 
     d->minimum_size = minimum_size;
+    d->config = config;
     d->in = samopen(filename, "rb", 0);
 
     if (d->in == 0) {

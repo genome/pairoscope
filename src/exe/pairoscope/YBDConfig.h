@@ -7,6 +7,7 @@
 #include <vector>
 #include <set>
 #include <sstream>
+#include <map>
 
 //This code shamelessly copied and pasted from Breakdancer.
 
@@ -71,9 +72,26 @@ public:
     std::set<std::string> library_names() const {
         return _library_names;
     }
+    
+    double mean_for_readgroup(std::string readgroup) const {
+        std::map<std::string, YBDConfigEntry>::const_iterator iter = _entries.find(readgroup);
+        if(iter == _entries.end()) {
+            //Couldn't find the readgroup in the config
+            std::stringstream error_message;
+            error_message << "Unable to find readgroup '" << readgroup << "' in breakdancer config file";
+            throw std::runtime_error(error_message.str());
+        }
+        else {
+            //need a way to retrieve by readgroup id
+            //find_if or duplicate datastructure/datastructure of indices into this array.
+            //will search this plenty so prolly don't want findif
+            //travis had this as boost flat_map in BD, but regular map is probably ok for now
+            return iter->second.mean;
+        }
+    }
 
 protected:
-    std::vector<YBDConfigEntry> _entries;
+    std::map<std::string, YBDConfigEntry> _entries;
     std::set<std::string> _readgroups;
     std::set<std::string> _library_names;
 };

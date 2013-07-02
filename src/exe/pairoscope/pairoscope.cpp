@@ -66,7 +66,8 @@ static int pairoscope_usage() {
     fprintf(stderr, "         -P FLAG   Only display reads with both mates mapped in the graph\n");
     fprintf(stderr, "         -t STRING list of transcripts to display\n");
     fprintf(stderr, "         -s FLAG   the bam should be treated as a SOLiD library\n");
-    fprintf(stderr, "         -c STRING a BreakDancer config file to help flag abnormal read pairs\n");
+    fprintf(stderr, "         -d STRING a BreakDancer config file to help flag abnormal read pairs\n");
+    fprintf(stderr, "         -c INT    cutoff in units of standard deviation to use with BreakDancer config [%d]\n",3);
 
     return 1;
 }
@@ -89,9 +90,10 @@ int main(int argc, char *argv[])
     bool is_solid = false;  //boolean to track whether the input bam is to be treated as SOLiD data
     int upper_bound = 0x7FFFFFFF, lower_bound = -1, min_size = 0;
     char *bdconfig = NULL;
+    int bd_stdev_cutoff = 3;
 
     //get the command line options
-    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:Pt:sc:")) >= 0) {
+    while((c = getopt(argc, argv, "q:b:npo:W:H:g:f:u:l:m:Pt:sc:d:")) >= 0) {
         switch (c) {
             case 'q': 
                 min_qual = atoi(optarg); 
@@ -151,8 +153,11 @@ int main(int argc, char *argv[])
             case 'P':
                 suppress_unpaired = true;   
                 break; 
-            case 'c':
+            case 'd':
                 bdconfig = optarg;
+                break;
+            case 'c':
+                bd_stdev_cutoff = atoi(optarg);
                 break;
             default: 
                 return pairoscope_usage();
@@ -173,6 +178,9 @@ int main(int argc, char *argv[])
     if(bdconfig) {
         ifstream config_stream(bdconfig);
         config = new YBDConfig(config_stream);
+        for(std::set<std::string>::const_iterator iter = config->readgroups().begin(); iter != config->readgroups().end(); ++iter) {
+            cerr << "Found readgroup " << *iter << endl;
+        }
     }
 
     
@@ -185,7 +193,7 @@ int main(int argc, char *argv[])
     vector<transcript_buffer> transcripts(regions); //vector of vectors to sotre transcripts
     hash_map_char<YMatePair*> unpaired_reads;   //hash to store reads that the mate has not been found. For matching up mates across translocations
     
-    YAlignmentFetcher fetcher(min_qual,buffer,print_normal);    //alignment fetcher object
+    YAlignmentFetcher fetcher(min_qual,buffer,print_normal,config,bd_stdev_cutoff);    //alignment fetcher object
 
     set<int> flags_to_fetch;   //set of flags to display
     

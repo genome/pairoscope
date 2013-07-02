@@ -50,7 +50,15 @@ YBDConfig::YBDConfig(istream& cfg_stream) {
     string line;
     while (getline(cfg_stream, line)) {
         YBDConfigEntry entry(line);
-        _entries.push_back(entry);
+        map<string, YBDConfigEntry>::iterator iter = _entries.find(entry.readgroup);
+        if(iter == _entries.end()) {
+            _entries.insert(pair<string, YBDConfigEntry>(entry.readgroup, entry));    //this will overwrite duplicate readgroup ids, but those should really be an exception...
+        }
+        else {
+            stringstream error_message;
+            error_message << "Duplicate readgroup: '" << entry.readgroup << "' found in BreakDancer configuration file";
+            throw runtime_error(error_message.str());
+        }
         _readgroups.insert(entry.readgroup);
         _library_names.insert(entry.library_name);
     }

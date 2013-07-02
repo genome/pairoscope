@@ -16,6 +16,7 @@
 #include "stdhash.hh"
 #include "YMatePair.h"
 #include <zlib.h>
+#include "YBDConfig.h"
 
 //! YAlignmentFetcher is a class for reading mapped reads into a data structure format for use with YGenomeView
 /*! Currently only the maq .map file format is supported*/
@@ -24,19 +25,21 @@ class YAlignmentFetcher {
     int minQual; //!< minimum alignment quality to report
     int buffer;   //!< buffer with which to pad the requested region
     bool includeNormal; //!< whether or not to include normally mapped paired reads in the return hash.
+    YBDConfig *config;
+
     
     public:
     //! default constructor
     /*! 
         \return a new object
      */
-        YAlignmentFetcher() : minQual(0), buffer(0), includeNormal(false) { return;};
+        YAlignmentFetcher() : minQual(0), buffer(0), includeNormal(false), config(NULL) { return;};
         //! standard constructor
     /*! 
         Currently hard coded for a scanWindow size of 300.
         \return a new object
      */
-        YAlignmentFetcher(int minQual, int buffer, bool includeNormal) : minQual(minQual), buffer(buffer), includeNormal(includeNormal) { return;};
+        YAlignmentFetcher(int minQual, int buffer, bool includeNormal, YBDConfig *config=NULL, int stddev=0) : minQual(minQual), buffer(buffer), includeNormal(includeNormal), config(config) { return;};
         
         //! reads in mate pairs from a BAM file 
         /*! 
