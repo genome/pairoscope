@@ -150,12 +150,6 @@ static int fetch_func(const bam1_t *b, void *data)
                             readflag = YMatePair::IN;
                         }
                     }
-
-
-                    //compare to Config stats via some sort of sd
-                    //set flags
-                    //
-
                 }
                 if(readflag == YMatePair::FR) { 
                     if(d->lower_bound != -1 && abs_size < d->lower_bound) {
@@ -175,7 +169,7 @@ static int fetch_func(const bam1_t *b, void *data)
                 
         }
         //fprintf(stderr,"MF = %i\n",maq_flag);
-        if(d->include_normal || (!(b->core.flag & BAM_FPROPER_PAIR) && !(readflag == YMatePair::NF) && (d->flags->empty() || d->flags->find(readflag) != d->flags->end() ))  ) {
+        if(d->include_normal || (!(readflag == YMatePair::NF) && !(readflag == YMatePair::FR) && (d->flags->empty() || d->flags->find(readflag) != d->flags->end() ))  ) {
             //abnormal read
             char *name = bam1_qname(b);
             YMatePair* mate;

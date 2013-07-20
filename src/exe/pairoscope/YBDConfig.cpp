@@ -44,6 +44,11 @@ void YBDConfigEntry::parse() {
     library_name = find_required(directives, LIB_PROPS);
     readgroup = find_required(directives, READ_GROUP_PROPS);
     bam_file = find_required(directives, "map");
+    readlen = _as<double>(find_required(directives, "readlen"));
+    mean = _as<double>(find_required(directives, "mean"));
+    stddev = _as<double>(find_required(directives, "std"));
+    lower = _as<double>(find_required(directives, "lower"));
+    upper = _as<double>(find_required(directives, "upper"));
 }
 
 YBDConfig::YBDConfig(istream& cfg_stream) {

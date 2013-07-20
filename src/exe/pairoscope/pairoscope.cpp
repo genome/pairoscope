@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     char *flags = NULL;                     //string of comma separated flags for selecting certain reads for display
     char *transcript_request = NULL;               //string of comma separated transcript names for selecting certain transcripts for display
     bool is_solid = false;  //boolean to track whether the input bam is to be treated as SOLiD data
-    int upper_bound = 0x7FFFFFFF, lower_bound = -1, min_size = 0;
+    int upper_bound = -1, lower_bound = -1, min_size = 0;
     char *bdconfig = NULL;
     int bd_stdev_cutoff = 3;
 
