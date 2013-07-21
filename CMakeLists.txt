@@ -33,4 +33,17 @@ include_directories("src/exe/pairoscope")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 add_projects(src/exe)
 
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    message("Doxygen found, documentation generation enabled")
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+else(DOXYGEN_FOUND)
+    message("Doxygen not found, documentation generation disabled")
+endif(DOXYGEN_FOUND)
+
 include(PackageInfo.cmake)
