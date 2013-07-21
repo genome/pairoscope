@@ -108,7 +108,7 @@ int YAlignmentFetcher::pushRead(bam1_t const* b) {
                 }
 
                 // check the size to determine if it hits our insertion/deletion
-                // cutoffs, // only flagging reads with the default Illumina
+                // cutoffs, only flagging reads with the default Illumina
                 // library orientation ie "normal" reads.
                 // note that this requires proper filling of isize and would not
                 // work for maq.
