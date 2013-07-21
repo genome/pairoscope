@@ -12,8 +12,10 @@
 #ifndef YDEPTHVIEW_H
 #define YDEPTHVIEW_H
 
+#include "io/DepthArray.hpp"
 #include "YRect.h"
 #include "YView.h"
+
 #include <string>
 #include <vector>
 
@@ -21,7 +23,8 @@
 /*! This class receives a reference to an array of depth values across a region and then graphs that region. */
 
 class YDepthView : public YView {
-    std::vector<int> *depth;        //!< array of a depth value for every bp in the region
+    typedef DepthArray<int> depth_buffer;
+    depth_buffer const* depth;        //!< array of a depth value for every bp in the region
     std::string refName;                 //!< name of the chromosome/contig
 
     unsigned int displayMaximumDepth;     //!< maximum value of y-axis
@@ -51,7 +54,7 @@ public:
     \param fontSize the size of the font in screen coordinates
     \param axisOffset the distance between the y axis labels and the axis in screen coordinates
      */
-    YDepthView(cairo_t *cr, YRect initialFrame, const char *refName, std::vector<int> *depthVector, double fontSize = 14.0, double axisOffset = 10.0);
+    YDepthView(cairo_t *cr, YRect initialFrame, const char *refName, depth_buffer const* depthVector, double fontSize = 14.0, double axisOffset = 10.0);
     //! destroys a PairView object
     ~YDepthView();
 

@@ -1,18 +1,13 @@
-/*----------------------------------
-  $Author$
-  $Date$
-  $Revision$
-  $URL$
-  ----------------------------------*/
-
 #ifndef YMATEPAIR_H
 #define YMATEPAIR_H
+
+#include <bam.h>
+
 
 //! YMatePair is a simple class to store information about a read pair
 /*! YMatePair stores information about reads in a pair. Some of this information is not currently used by yenta, but will likely be populated and used in the future
 */
-class YMatePair {
-    public:
+struct YMatePair {
 
     //! enum for storing the orientation of the reads relative each other
     enum orientation_flag {
@@ -38,12 +33,29 @@ class YMatePair {
     int bestMappingQuality;
 
     //! default constructor for YMatePair
-    YMatePair() : libraryName(0), readLength(0), leftReadPosition(0), leftRefName(NULL), rightReadPosition(0), rightRefName(NULL), orientation(NF), mappingDistance(0), bestMappingQuality(0) {}
+    YMatePair()
+        : libraryName(0)
+        , readLength(0)
+        , leftReadPosition(0)
+        , leftRefName(0)
+        , rightReadPosition(0)
+        , rightRefName(0)
+        , orientation(NF)
+        , mappingDistance(0)
+        , bestMappingQuality(0)
+    {
+    }
+
     //! destructor for YMatePair
     ~YMatePair() {
-       if(leftRefName) { delete[] leftRefName; }
-       if(rightRefName) { delete[] rightRefName; };
+        delete[] leftRefName;
+        leftRefName = 0;
+        delete[] rightRefName;
+        rightRefName = 0;
     }
 };
+
+YMatePair::orientation_flag flag_from_maq_tag(bam1_t const* b);
+YMatePair::orientation_flag flag_from_pair_info(bam1_t const* b);
 
 #endif

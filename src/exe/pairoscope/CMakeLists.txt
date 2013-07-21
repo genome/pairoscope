@@ -14,6 +14,7 @@ set(SOURCES
     YGeneView.h
     YGenomeView.cpp
     YGenomeView.h
+    YMatePair.cpp
     YMatePair.h
     YPairView.cpp
     YPairView.h

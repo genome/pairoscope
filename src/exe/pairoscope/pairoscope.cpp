@@ -18,32 +18,38 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 //DONE Make BAM/SAM Alignment Loading
-//TODO Add exclusion of specific maq tags
+//TODO Add exclusion of specific maq tags <- maq!
 //FIXME Properly handle regions that buffer outside the chromosome
-//FIXME Odd spacing
-//FIXME occasional silent failures?
+//FIXME Odd spacing <- ?
+//FIXME occasional silent failures? <- shh?
 //TODO Allow specific transcript requests
-//TODO Allow configuration file
+//TODO Allow configuration file <- boost is going to be really useful here.
 
 
-#include <cstddef> // size_t
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
-#include <vector>
-#include <set>
-#include <string>
-#include "version.h"
+#include "YAlignmentFetcher.h"
+#include "YBDConfig.h"
 #include "YGenomeView.h"
 #include "YMatePair.h"
-#include <zlib.h>
-#include <cairo.h>
-#include <cairo-pdf.h>
-#include <stdio.h>
-#include <errno.h>
-#include "YAlignmentFetcher.h"
 #include "YTranscriptFetcher.h"
-#include "YBDConfig.h"
+#include "io/DepthArray.hpp"
+#include "version.h"
+
+#include <cairo-pdf.h>
+#include <cairo.h>
+
+#include <zlib.h>
+
+#include <cerrno>
+#include <cstddef> // size_t
+#include <cstdio>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <set>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 
 using namespace std;
 
@@ -173,7 +179,7 @@ int main(int argc, char *argv[])
 
     int regions = (argc-optind) / 4;    //calculate the number of regions
 
-    YBDConfig *config = NULL;
+    YBDConfig *config = 0;
     //parse BDconfig
     if(bdconfig) {
         ifstream config_stream(bdconfig);
@@ -185,15 +191,13 @@ int main(int argc, char *argv[])
 
 
     //define types to simplify the actual vector declarations
-    typedef vector<int> depth_buffer;
+    typedef DepthArray<int> depth_buffer;
     typedef vector<YTranscript*> transcript_buffer;
 
     vector<depth_buffer> depth(regions);    //create a vector of vectors to store depth
     vector<YMatePair*> mappedReads;         //vector of mapped reads
     vector<transcript_buffer> transcripts(regions); //vector of vectors to sotre transcripts
     hash_map_char<YMatePair*> unpaired_reads;   //hash to store reads that the mate has not been found. For matching up mates across translocations
-
-    YAlignmentFetcher fetcher(min_qual,buffer,print_normal,config,bd_stdev_cutoff);    //alignment fetcher object
 
     set<int> flags_to_fetch;   //set of flags to display
 
@@ -249,28 +253,52 @@ int main(int argc, char *argv[])
 
     //parse reads for each region
     for(int i = 0; i < regions; i++) {
-        bool return_value = false;
+        char const* bam_file = argv[optind];
+        char const* seq_name = argv[optind+1];
+        unsigned start = atoi(argv[optind+2]);
+        unsigned end = atoi(argv[optind+3]);
 
-        //fetch the reads from the bam file
-        return_value = fetcher.fetchBAMAlignments(argv[optind], argv[optind+1], atoi(argv[optind+2]), atoi(argv[optind+3]), &(depth[i]), &mappedReads, &unpaired_reads, &flags_to_fetch, lower_bound, upper_bound, min_size);
-        if(return_value) {
-            //add the region to the document for display
-            unsigned int buffered_start = 0;
-            if( atoi(argv[optind+2]) - buffer > 0 ) {
-                buffered_start =  atoi(argv[optind+2]) - buffer;
+        try {
+            // fetch the reads from the bam file
+            YAlignmentFetcher fetcher(
+                bam_file,
+                flags_to_fetch,
+                min_qual,
+                buffer,
+                print_normal,
+                lower_bound,
+                upper_bound,
+                min_size,
+                &mappedReads,
+                &unpaired_reads,
+                config,
+                bd_stdev_cutoff
+                );
+
+            fetcher.fetchBAMAlignments(seq_name, start, end, &depth[i]);
+
+        } catch (std::runtime_error const& e) {
+            std::cerr << "ERROR: " << e.what();
+
+            typedef vector<YMatePair*>::iterator TIter;
+            for(TIter i = mappedReads.begin(); i != mappedReads.end(); ++i) {
+                delete *i;
             }
-            //overflow is unlikely so avoiding a check here
-            document.addRegion((const char*) argv[optind+1], buffered_start, (unsigned int) atoi(argv[optind+3]) + buffer, &(depth[i]));
-        }
-        else {
-            for( vector<YMatePair*>::iterator itr = mappedReads.begin(); itr != mappedReads.end(); ++itr) {
-                delete *itr;
-            }
-            //we do not need to remove unpaired reads too as those are just references to actual objects in the vector
+            // we do not need to remove unpaired reads too as those are just
+            // references to actual objects in the vector
             cairo_destroy (cr);
             cairo_surface_destroy (surface);
             return EXIT_FAILURE;
         }
+
+        //add the region to the document for display
+        unsigned int buffered_start = 0;
+        if( start - buffer > 0 ) {
+            buffered_start = start - buffer;
+        }
+        //overflow is unlikely so avoiding a check here
+        document.addRegion(seq_name, buffered_start, end + buffer, &depth[i]);
+
         if(gene_bam_file ) {
             bool return_value = false;
             YTranscriptFetcher geneFetcher(buffer);
@@ -313,9 +341,8 @@ int main(int argc, char *argv[])
     }
     cairo_surface_destroy (surface);
 
-    if(config) {
-        delete config;
-    }
+    delete config;
+    config = 0;
 
     return EXIT_SUCCESS;
 }

@@ -18,7 +18,7 @@
 
 using std::stringstream;
 
-YDepthView::YDepthView(cairo_t *cr, YRect initialFrame, const char *refName, std::vector<int> *depthVector, double fontSize, double axisOffset)
+YDepthView::YDepthView(cairo_t *cr, YRect initialFrame, const char *refName, depth_buffer const* depthVector, double fontSize, double axisOffset)
     : YView(cr,initialFrame), depth(depthVector), refName(refName)
 {
     axisTextLabel = "Depth for " + this->refName;
@@ -114,7 +114,7 @@ void YDepthView::draw() {
         //iterate over the depth and draw that bad boy
         unsigned int i;
         for(i = 0; i != depth->size(); i++) {
-            cairo_line_to(context, i, -(*depth)[i]);
+            cairo_line_to(context, i, -depth->at_index(i));
         }
 
         //preserve original scaling etc and draw the depth graph
@@ -153,12 +153,7 @@ void YDepthView::calculateAxes() {
             max = 1;
         }
         else {
-            if(depth->size() == 1) {
-                max = depth->at(0); //for some crazy reason I don't understand. Max element is crashing when there is only a single element
-            }
-            else {
-                max = *max_element(depth->begin(),depth->end());
-            }
+            max = depth->max();
         }
         setDisplayMaximumDepth(max);
     }

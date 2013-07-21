@@ -26,6 +26,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 
 # make sure to pick up headers from library dirs
+include_directories("src/lib")
 include_directories("src/exe/pairoscope")
 
 # main project

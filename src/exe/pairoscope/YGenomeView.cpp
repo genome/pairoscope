@@ -11,7 +11,7 @@
 #include <cstring>
 #include <cstdio>
 
-void YGenomeView::addRegion(const char* refName, unsigned int physicalStart, unsigned int physicalStop, std::vector<int> *depth) {
+void YGenomeView::addRegion(const char* refName, unsigned int physicalStart, unsigned int physicalStop, depth_buffer const* depth) {
     //each region will have two tracks
     YDepthView *newDepthView = new YDepthView(context, YRect(), refName, depth);
     newDepthView->setAutoScale(true);

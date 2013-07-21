@@ -8,6 +8,8 @@
 #ifndef YGENOMEVIEW_H
 #define YGENOMEVIEW_H
 
+#include "io/DepthArray.hpp"
+
 #include "YPairView.h"
 #include "YDepthView.h"
 #include "YView.h"
@@ -30,6 +32,8 @@ class YGenomeView : public YView {
     std::map<YMatePair::orientation_flag,YColor> colorMap; //!< stores color associations to the various flags. Intended to eventually allow configurable colors
 
     public:
+        typedef DepthArray<int> depth_buffer;
+
         //! standard constructor
         /*! Currently regions have to be added post construction
             \param cr cairo drawing context
@@ -50,7 +54,7 @@ class YGenomeView : public YView {
         \param physicalStop end point of the region
         \param depth array containing depth information for the region
          */
-        void addRegion(const char* refName, unsigned int physicalStart, unsigned int physicalStop, std::vector<int> *depth);
+        void addRegion(const char* refName, unsigned int physicalStart, unsigned int physicalStop, depth_buffer const* depth);
 
 
         //! adds a genetrack
