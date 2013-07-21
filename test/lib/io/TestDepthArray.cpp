@@ -44,15 +44,18 @@ TEST(DepthArray, bounds) {
 TEST(DepthArray, cap_value) {
     DepthArray<unsigned char> da("1", 0, 10);
     unsigned char max_minus_one = std::numeric_limits<unsigned char>::max() - 1;
+
     da.increment(0, max_minus_one);
     EXPECT_EQ(max_minus_one, da[0]);
+
     da.increment(0, 1);
     EXPECT_EQ(max_minus_one + 1, da[0]);
+
     da.increment(0, 2);
     EXPECT_EQ(max_minus_one + 1, da[0]);
+
     da.increment(0, 3);
     EXPECT_EQ(max_minus_one + 1, da[0]);
-
 }
 
 TEST(DepthArray, max_value) {
