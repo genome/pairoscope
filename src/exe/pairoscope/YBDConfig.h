@@ -65,11 +65,11 @@ class YBDConfig {
 public:
     explicit YBDConfig(std::istream& cfg_stream);
 
-    std::set<std::string> readgroups() const {
+    std::set<std::string> const& readgroups() const {
         return _readgroups;
     }
 
-    std::set<std::string> library_names() const {
+    std::set<std::string> const& library_names() const {
         return _library_names;
     }
 
