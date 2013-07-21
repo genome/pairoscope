@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -24,19 +24,29 @@ class YTranscript {
         char* refName;   //!< chromosome name the transcript is placed on
         char* status;    //!< status of the transcript in question
         int strand;     //!< which strand the transcript is assigned to
-        int length;     //!< the length of the coding exons 
+        int length;     //!< the length of the coding exons
         std::vector<YTranscriptSubStructure> orderedStructures; //!< each structure in reference orientation, intended to only store those in a region
         int totalNumberOfStructures;    //!< total number of structures, not just the ones in the region
-    
+
     //! default constructor for YTranscript
-        YTranscript() : gene(NULL), name(NULL), refName(NULL), status(NULL), strand(0), length(0), totalNumberOfStructures(0) {}
+        YTranscript()
+            : gene(0)
+            , name(0)
+            , refName(0)
+            , status(0)
+            , strand(0)
+            , length(0)
+            , totalNumberOfStructures(0)
+        {
+        }
+
     //! destructor for YTranscript
-        ~YTranscript() { 
+        ~YTranscript() {
             if(gene) { delete[] gene; }
             if(name) { delete[] name; };
             if(refName) { delete[] refName; };
             if(status) { delete[] status; };
         }
 };
-    
+
 #endif

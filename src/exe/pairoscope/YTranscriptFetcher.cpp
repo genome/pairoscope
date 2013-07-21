@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -13,7 +13,7 @@
 #include "YTranscriptFetcher.h"
 
 //this is in bam_aux.c but not in a header (bad Heng Li)
-extern "C" { 
+extern "C" {
         int32_t bam_get_tid(const bam_header_t *header, const char *seq_name);
         void bam_init_header_hash(bam_header_t *header);
 }
@@ -24,7 +24,7 @@ typedef struct {
     int beg,end;
     samfile_t *in;
     std::vector<YTranscript*> *transcripts;
-    hash_map_char<YTranscript*> transcriptNames;    
+    hash_map_char<YTranscript*> transcriptNames;
     std::set<std::string> *requestedTranscripts;
 } fetch_data_t;
 
@@ -53,16 +53,15 @@ static int fetch_func(const bam1_t *b, void *data)
     fprintf(stderr,"%s\n",name);
     //TODO Desparately need some error checking on flag retrieval
     char *status = bam_aux2Z(bam_aux_get(b,"YT"));
-    char *source = bam_aux2Z(bam_aux_get(b,"YS"));
     int length = bam_aux2i(bam_aux_get(b,"HI"));
-    
+
     YTranscript* transcript;
-    
+
     YTranscriptSubStructure structure;
     structure.position = b->core.pos + 1;
     structure.length = b->core.l_qseq;
     structure.ordinal = bam_aux2i(bam_aux_get(b,"HI"));
-    
+
     if(d->transcriptNames.find(name,&transcript)) {
         //then we've already found some part of this transcript
         transcript->orderedStructures.push_back(structure);
@@ -83,7 +82,7 @@ static int fetch_func(const bam1_t *b, void *data)
 
         char *statusName = new char[ strlen(status + 1) ];
         strcpy(statusName, status);
-        
+
         transcript->gene = geneName;
         transcript->name = transcriptName;
         transcript->refName = refName;
