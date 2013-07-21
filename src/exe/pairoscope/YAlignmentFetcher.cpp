@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -26,7 +26,7 @@ typedef struct {
     samfile_t *in;
     std::vector<YMatePair*> *mates;
     std::vector<int> *depth;
-    hash_map_char<YMatePair*> *unpaired_reads;    
+    hash_map_char<YMatePair*> *unpaired_reads;
     std::set<int> *flags;
     int lower_bound;
     int upper_bound;
@@ -36,8 +36,8 @@ typedef struct {
     bam_plbuf_t *buf;
 } pileup_data_t;
 
-//this is in bam_aux.c but not in a header 
-extern "C" { 
+//this is in bam_aux.c but not in a header
+extern "C" {
     int32_t bam_get_tid(const bam_header_t *header, const char *seq_name);
     void bam_init_header_hash(bam_header_t *header);
 }
@@ -56,7 +56,7 @@ static int fetch_func(const bam1_t *b, void *data)
         YMatePair::orientation_flag readflag = YMatePair::NF; //no flag
         if(b->core.flag & BAM_FPAIRED) {
             if(b->core.flag & BAM_FMUNMAP) {
-                readflag = YMatePair::PM;  //partial match     
+                readflag = YMatePair::PM;  //partial match
             }
             else {
                 //already know this should be paired so check if mate information is available otherwise exit
@@ -65,7 +65,7 @@ static int fetch_func(const bam1_t *b, void *data)
                     if(result) {
                         int32_t maq_flag = bam_aux2i(result);
                         switch(maq_flag) {
-                            case 18: 
+                            case 18:
                                 readflag = YMatePair::FR;
                                 break;
                             case 64:
@@ -151,7 +151,7 @@ static int fetch_func(const bam1_t *b, void *data)
                         }
                     }
                 }
-                if(readflag == YMatePair::FR) { 
+                if(readflag == YMatePair::FR) {
                     if(d->lower_bound != -1 && abs_size < d->lower_bound) {
                         //assume insertion
                         readflag = YMatePair::IN;
@@ -166,7 +166,7 @@ static int fetch_func(const bam1_t *b, void *data)
                     readflag = YMatePair::NF;
                 }
             }
-                
+
         }
         //fprintf(stderr,"MF = %i\n",maq_flag);
         if(d->include_normal || (!(readflag == YMatePair::NF) && !(readflag == YMatePair::FR) && (d->flags->empty() || d->flags->find(readflag) != d->flags->end() ))  ) {
@@ -232,7 +232,7 @@ static int pileup_func(uint32_t tid, uint32_t pos, int n, const bam_pileup1_t *p
             const bam_pileup1_t *base = pl + i;
             if(!base->is_del) {
                 //fprintf(stderr,"%s\n",bam1_qname(base->b));
-                mapq_n++;                
+                mapq_n++;
             }
         }
         //set depth at position
@@ -256,7 +256,7 @@ bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *ref
     d->flags = flags;
     d->include_normal = this->includeNormal;
     d->lower_bound = lower_bound; //by default mark no reads as insertions
-    d->upper_bound = upper_bound;    //max integer value to expect in isize. Could this overflow on some systems? 
+    d->upper_bound = upper_bound;    //max integer value to expect in isize. Could this overflow on some systems?
     d->minimum_size = minimum_size;
     d->config = config;
     d->stddev_cutoff = stddev;
@@ -288,7 +288,7 @@ bool YAlignmentFetcher::fetchBAMAlignments(const char* filename, const char *ref
     bam_fetch(d->in->x.bam, idx, d->tid, d->beg, d->end, d, fetch_func);
     bam_plbuf_push(0, d->buf); // finalize pileup
     bam_index_destroy(idx);
-    bam_plbuf_destroy(d->buf);    
+    bam_plbuf_destroy(d->buf);
     samclose(d->in);
     free(d);
     return 1;

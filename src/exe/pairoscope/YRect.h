@@ -1,11 +1,11 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
   -----------------------------------
 
-  This is a simple rectangle struct 
+  This is a simple rectangle struct
 
   ----------------------------------*/
 
@@ -22,8 +22,8 @@ class YRect {
     double width; //!< width in pixels
     double height; //!< height in pixels
 
-    //! Constructor for initialization of all parameters 
-    /*! 
+    //! Constructor for initialization of all parameters
+    /*!
     \param x the x-coordinate of the YRect's origin
     \param y the y-coordinate of the YRect's origin
     \param width the width of the YRect

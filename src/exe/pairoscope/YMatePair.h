@@ -1,10 +1,10 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
   ----------------------------------*/
-  
+
 #ifndef YMATEPAIR_H
 #define YMATEPAIR_H
 
@@ -13,8 +13,8 @@
 */
 class YMatePair {
     public:
-    
-    //! enum for storing the orientation of the reads relative each other    
+
+    //! enum for storing the orientation of the reads relative each other
     enum orientation_flag {
         NF, //!< no flag, default for unfound flag color
         FR, //!< reads are in a forward-reverse orientation
@@ -22,9 +22,9 @@ class YMatePair {
         FF, //!< reads are in forward-forward orientation
         RF, //!< reads are in reverse-forward orientation
         RR, //!< reads are in reverse-reverse orientation
-        CT, //!< reads mapped across chromosomes 
-        DL, //!< reads mapped with distance greater than some cutoff 
-        IN  //!< reads mapped with distance smaller than some cutoff 
+        CT, //!< reads mapped across chromosomes
+        DL, //!< reads mapped with distance greater than some cutoff
+        IN  //!< reads mapped with distance smaller than some cutoff
     };
 
     char* libraryName;  //!< library where these reads came from
@@ -36,14 +36,14 @@ class YMatePair {
     orientation_flag orientation;             //!< flag indicating what orientation the reads are to each other
     int mappingDistance;     //!< distance between the pairs
     int bestMappingQuality;
-    
+
     //! default constructor for YMatePair
     YMatePair() : libraryName(0), readLength(0), leftReadPosition(0), leftRefName(NULL), rightReadPosition(0), rightRefName(NULL), orientation(NF), mappingDistance(0), bestMappingQuality(0) {}
     //! destructor for YMatePair
-    ~YMatePair() { 
+    ~YMatePair() {
        if(leftRefName) { delete[] leftRefName; }
        if(rightRefName) { delete[] rightRefName; };
     }
 };
-    
+
 #endif

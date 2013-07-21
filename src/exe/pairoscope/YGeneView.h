@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -30,16 +30,16 @@ class YGeneView : public YView
 
 
 
-    //! Returns a priority code for a genbank status 
+    //! Returns a priority code for a genbank status
     /*!
     \param status name of the status in question
     \return the priority of that status in selecting a transcript. Lower is better.
      */
     int transcriptStatusPriority(char *status);
-    
+
 public:
     //! constructs a new GeneView
-    /*! 
+    /*!
     \param cr cairo context of the view
     \param initialFrame boundaries of the view within the parent
     \param refName reference name for axis label
@@ -49,26 +49,26 @@ public:
     YGeneView(cairo_t *cr, YRect initialFrame, const char *refName, unsigned int physicalStart, unsigned int physicalStop, std::vector<YTranscript*> *transcriptVector, bool topTranscript = true, double fontSize = 14.0);
 
     ~YGeneView();
-    
+
     //! draws a GeneView object
     void draw();
-    
+
     //!calculates the size available for the plot and draws the axes
     void calculateAxes();	
-    
+
     //! converts the boundaries of the graph, data region only, to the coordinates of the YView's parent
     /*!
     \return a YRect containing the bounds of the data region of the graph in parent coordinates
      */
     YRect plotAreaInParentCoordinates();
-    
+
     //! sets the boundaries of the graph, data region only, to YRect passed with parent coordinates
     /*!
     \param newPlotArea YRect containing desired bounds of the graph data in this view's parent's coordinate system
     \return whether the setting was successful
      */
     bool setPlotAreaInParentCoordinates(YRect newPlotArea);
-    
+
 
 };
 

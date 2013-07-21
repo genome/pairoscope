@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -13,15 +13,15 @@
 #include <cstdlib> //for NULL definition
 
 //Constructor, may want to consider simplifying out some of the types
-YView::YView(cairo_t *cr, YRect frame, bool willClipFrame, bool willDrawSelf) 
-    :   context(cr), 
+YView::YView(cairo_t *cr, YRect frame, bool willClipFrame, bool willDrawSelf)
+    :   context(cr),
         frame(frame),
         parentView(NULL),
         siblingView(NULL),
         childView(NULL),
         clipFrame(willClipFrame),
         drawsSelf(willDrawSelf)
-    
+
 {
     cairo_matrix_init_identity(&matrix);
     setBounds(YRect(0,0,frame.width, frame.height));    //by default set the Bounds to the Frame
@@ -45,7 +45,7 @@ YView::~YView() {
 void YView::setMatrix(const cairo_matrix_t newMatrix) {
     matrix = newMatrix;
     setFrame(frame);
-} 
+}
 
 void YView::addChildView(YView *newChildView) {
     //find the next available sibling
@@ -63,7 +63,7 @@ void YView::addChildView(YView *newChildView) {
 }
 
 YView* YView::getSiblingView(void) {
-    return this->siblingView;    
+    return this->siblingView;
 }
 
 void YView::setFrame(YRect newFrame) {
@@ -81,7 +81,7 @@ YRect YView::getFrame() {
 void YView::setBounds(YRect newBounds) {
     bounds = newBounds;
     cairo_matrix_init_translate(&matrix, frame.x, frame.y);
-    
+
     //translate to new origin
     cairo_matrix_translate(&matrix, bounds.x, bounds.y);
     //rescale the matrix.
@@ -109,8 +109,8 @@ void YView::rectInParentCoordinates(YRect *rect) {
     cairo_matrix_init_translate(&undo_matrix, frame.x, frame.y);
     cairo_matrix_translate(&undo_matrix, bounds.x, bounds.y);
     cairo_matrix_scale(&undo_matrix, frame.width/bounds.width, frame.height/bounds.height);
-    
-   
+
+
     cairo_matrix_transform_point(&undo_matrix, &(rect->x), &(rect->y));
     cairo_matrix_transform_distance(&undo_matrix, &(rect->width), &(rect->height));
 }
@@ -144,7 +144,7 @@ void YView::draw() {
 
 void YView::render() {
     prepareForRender();
-    
+
     if(drawsSelf) {
         draw(); //render self
     }
@@ -154,14 +154,14 @@ void YView::render() {
         currentView->render();
         currentView = currentView->siblingView;
     }
-    
+
     endRender();
 }
 
 void YView::prepareForRender() {
     //assume that our parent has set up the context for us
     cairo_save(context);
-    
+
     if(clipFrame) {
 	//set up clipping within parentView
         cairo_rectangle(context,frame.x, frame.y, frame.width, frame.height);
@@ -178,4 +178,4 @@ void YView::endRender() {
 
 
 
-    
+

@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -18,17 +18,17 @@ void YGenomeView::addRegion(const char* refName, unsigned int physicalStart, uns
     YPairView *newPairView = new YPairView(context, YRect(), refName, physicalStart, physicalStop);
     int numberNonGeneTracks = numberTracks - geneTracks;
     if(childView) {
-        this->insertChildAfterIndex(numberNonGeneTracks/2 - 1, newDepthView); 
+        this->insertChildAfterIndex(numberNonGeneTracks/2 - 1, newDepthView);
     }
     else {
         addChildView(newDepthView);
     }
     //add final pairView
     this->insertChildAfterIndex(numberNonGeneTracks, newPairView);
-    
+
     numberTracks += 2;
     layoutTracks();
-    
+
 }
 
 
@@ -37,22 +37,22 @@ void YGenomeView::addGeneTrack(const char* refName, unsigned int physicalStart, 
     addChildView(geneView);
     geneTracks++;
     numberTracks++;
-    layoutTracks();    
+    layoutTracks();
 }
 
 void YGenomeView::layoutTracks() {
     //divide up the tracks
     double spacing = 10.0;
     double trackHeight = (frame.height - (spacing*(numberTracks)))/numberTracks;
-    
+
     //variable to store where axes should be drawn
     //note that I am only considering the case where you have a single column
     double best_xstart = bounds.x, best_width = bounds.width;
-    
+
     int numberNonGeneTracks = numberTracks - geneTracks;
 
-            
-    //resize each childView 
+
+    //resize each childView
     YView *currentView = childView;
     for(int i = 0; i < numberNonGeneTracks/2; ++i) {
         currentView->setFrame(YRect(frame.x, frame.y + trackHeight*i + spacing*i,frame.width,trackHeight));
@@ -66,7 +66,7 @@ void YGenomeView::layoutTracks() {
         if(best_width > tempArea.width) {
             best_width = tempArea.width;
         }
-        
+
         currentView = currentView->getSiblingView();
     }
     for(int i = numberNonGeneTracks/2; i < numberNonGeneTracks; ++i) {
@@ -93,14 +93,14 @@ void YGenomeView::layoutTracks() {
         if(best_width > tempArea.width) {
             best_width = tempArea.width;
         }
-        ((YGeneView*) currentView)->calculateAxes(); //should not be null   
+        ((YGeneView*) currentView)->calculateAxes(); //should not be null
         currentView = currentView->getSiblingView();
     }
-    
+
     //NOw that we've gotten the initial layout, alter so that the axes line up for each view regardless of label size
     currentView = childView;
     for(int i = 0; i < numberNonGeneTracks/2; ++i) {
-        
+
         YRect tempArea = ((YDepthView*) currentView)->plotAreaInParentCoordinates();
         tempArea.x = best_xstart;
         tempArea.width = best_width;
@@ -108,7 +108,7 @@ void YGenomeView::layoutTracks() {
         currentView = currentView->getSiblingView();
     }
     for(int i = numberNonGeneTracks/2; i < numberNonGeneTracks; ++i) {
-        
+
         YRect tempArea = ((YPairView*) currentView)->plotAreaInParentCoordinates();
         tempArea.x=best_xstart;
         tempArea.width = best_width;
@@ -122,7 +122,7 @@ void YGenomeView::layoutTracks() {
         ((YGeneView*) currentView)->setPlotAreaInParentCoordinates(tempArea);
         currentView = currentView->getSiblingView();
     }
-    
+
 }
 
 void YGenomeView::display() {
@@ -150,7 +150,7 @@ void YGenomeView::draw() {
                 }
             }
             if(leftPairView && (!suppressUnpaired || rightPairView)) {
-            //draw the read 
+            //draw the read
                 drawReadPairInViews(*i,leftPairView, rightPairView);
             }
         }
@@ -160,23 +160,23 @@ void YGenomeView::draw() {
 YPairView* YGenomeView::findViewForLocation(const char* refName, unsigned int pos) {
     //FIXME this doesn't allow same regions with different alignment files
     int numberNonGeneTracks = numberTracks - geneTracks;    //exclude gene views
-    
+
     YView* currentView = childView;
     //Skip DepthViews
     for(int i = 0; i < numberNonGeneTracks/2; ++i) {
         currentView = currentView->getSiblingView();
     }
-    
+
     YPairView* currentPairView = (YPairView*) currentView;
     for(int i = numberNonGeneTracks/2; i < numberNonGeneTracks; ++i) {
-        
+
         if(strcmp(currentPairView->getRefName(),refName) == 0 && pos >= currentPairView->getPhysicalStart() && pos <= currentPairView->getPhysicalStop()) {
             return currentPairView;
         }
         currentPairView = (YPairView*) currentPairView->getSiblingView();
     }
     return NULL;
-    
+
 }
 
 void YGenomeView::drawReadPairInViews(YMatePair *mate, YPairView* leftView, YPairView* rightView) {
@@ -192,7 +192,7 @@ void YGenomeView::drawReadPairInViews(YMatePair *mate, YPairView* leftView, YPai
             rightView->pointInParentCoordinates(&rtop);
             YPoint rbottom = rightView->bottomPointOfRead(mate->rightReadPosition);
             rightView->pointInParentCoordinates(&rbottom);
-            
+
             if(rtop.y > ltop.y) {
                 cairo_move_to(context, rbottom.x, rbottom.y - 1.0);
                 cairo_line_to(context, rtop.x, rtop.y);
@@ -224,12 +224,12 @@ void YGenomeView::setColorForPair(YMatePair* pair) {
     pos = colorMap.find(pair->orientation);
     if(pos != colorMap.end()) {
         YColor color = pos->second;
-        cairo_set_source_rgba(context,color.red,color.green,color.blue,color.alpha); 
+        cairo_set_source_rgba(context,color.red,color.green,color.blue,color.alpha);
     }
     else {
         //for all other reads graph as darker gray
         cairo_set_source_rgba (context,0.8 , 0.8, .8,.8);
-    }        
+    }
 }
 
 void YGenomeView::setColorForFlag(unsigned int flag) {
@@ -250,12 +250,12 @@ void YGenomeView::setColorForFlag(unsigned int flag) {
     else if(flag == 4) {
         //Mapped RF
         cairo_set_source_rgba (context,0 , .8, 0,.8);
-        
+
     }
     else if(flag == 8) {
         //Mapped RR
         cairo_set_source_rgba (context,0 , 0, .8,.8);
-        
+
     }
     else if(flag == 130) {
         //one mapped by Smith-Waterman
@@ -281,8 +281,8 @@ void YGenomeView::setColorForFlag(unsigned int flag) {
     }
     else {
         std::cerr << "Unhandled flag" << flag << "\n";
-    }        
-    
+    }
+
 }
 void YGenomeView::setSuppressUnpairedReads(bool flag) {
     this->suppressUnpaired = flag;

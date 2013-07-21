@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -16,15 +16,15 @@ class YPoint {
     public:
         double x; //!< x-coordinate
         double y; //!< y-coordinate
-        
+
         //! creates a new point with parameters
-        /*! 
+        /*!
         \param x the x-coordinate
         \param y the y-coordinate
         \return a new YPoint object
         */
         YPoint(double x, double y) : x(x), y(y) {return;};
-        
+
         //!creates a point at the origin as the default
         /*!
         \return a new YPoint object

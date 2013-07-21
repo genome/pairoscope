@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -22,19 +22,19 @@
 
 class YTranscriptFetcher {
     int buffer;   //!< buffer with which to pad the requested region
-    
+
     public:
         //! default constructor
-        /*! 
+        /*!
            \return a new object
         */
         YTranscriptFetcher() : buffer(0) { return;};
         //! standard constructor
-        /*! 
+        /*!
             \return a new object
         */
         YTranscriptFetcher(int buffer) : buffer(buffer) { return;};
-    
+
         bool fetchBAMTranscripts(const char* filename, const char *refName, unsigned int start, unsigned int end, std::vector<YTranscript*> *transcripts, std::set<std::string> *transcriptNames = NULL);
 };
 

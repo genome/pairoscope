@@ -1,5 +1,5 @@
 /*----------------------------------
-$Author$ 
+$Author$
 $Date$
 $Revision$
 $URL$
@@ -29,13 +29,13 @@ YPairView::YPairView(cairo_t *cr, YRect initialFrame, const char *refName, unsig
     setBounds(YRect(0,0,physicalStop-physicalStart,1));
     return;
 }
-    
+
 YPairView::~ YPairView() {
     if(refName) {
         delete[] refName;
     }
-}    
-    
+}
+
 YPoint YPairView::topPointOfRead(double coordinate) {
     return YPoint(coordinate - physicalStart,bounds.height - readHeight);
 }
@@ -70,31 +70,31 @@ void YPairView::pointInParentCoordinates(YPoint *point) {
 void YPairView::calculateAxes() {
     //first generate text and sizes
     //add in the offset
-    //store the available space for the actual graph somewhere 
+    //store the available space for the actual graph somewhere
     //drawing code should be extrapolated out of here, in order to allow for us to set the plot area outside of the object ie for aligning margins
-    
+
     //For this view we only print the x axis for now
     //ADDED Add in some sort of offset between the labels and the axis (ie pad the plot area). Offset should be in the same coord system as font
     //TODO Add in tick marks, same rules apply as above
     //TODO Add in axis label
     //FIXME seems to be using plotArea incorrectly
-    
+
     setBounds(YRect(0,0,physicalStop-physicalStart,1));
-    
+
     cairo_save(context);
     cairo_identity_matrix(context);
         //Here is some font related crap
     cairo_select_font_face(context, "Helvetica", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD); //hardcoding for now
     cairo_set_font_size(context, fontSize);	//hardcoding for now
-    
-        
+
+
     cairo_text_extents(context, startLabelText.c_str(), &start_text_bb);	//this grabs the bounds of the start string
     cairo_text_extents(context, stopLabelText.c_str(), &stop_text_bb);	//this grabs the bounds of the stop string
-    
-        
+
+
     //this is sort of underhanded, but set up the transformation here
     prepareForRender();
-        
+
     //move bounding width into local coordinates, this should be re-factored into a function
     //this seems dumb
     double dummy = 0;
@@ -110,26 +110,26 @@ void YPairView::calculateAxes() {
     cairo_device_to_user_distance(context, &dummy, &start_text_bb.height);
     dummy = 0;
     cairo_device_to_user_distance(context, &dummy, &stop_text_bb.height);
-    
-    
+
+
     //adjust plotArea
     plotArea.x = bounds.x + start_text_bb.width/2; //centering
     plotArea.width = bounds.width - plotArea.x - stop_text_bb.width/2;
     plotArea.y = bounds.y - user_offset;
-    plotArea.height = bounds.height - start_text_bb.height - user_offset; 
-            
+    plotArea.height = bounds.height - start_text_bb.height - user_offset;
+
     endRender();
     cairo_restore(context);
-    
+
 }
 
 void YPairView::draw() {
-        
+
     //Draw the text labels
-    //align to bottom left 
-    
+    //align to bottom left
+
     cairo_move_to(context, bounds.x, bounds.y + bounds.height);
-    
+
     //preserve original scaling etc and draw the max label
     cairo_save(context);
     cairo_identity_matrix(context);	//scale to square pixels
@@ -139,10 +139,10 @@ void YPairView::draw() {
     cairo_show_text(context, startLabelText.c_str());
 
     cairo_restore(context);
-    
+
     //draw at bottom right
     cairo_move_to(context, bounds.x + bounds.width - stop_text_bb.x_advance, bounds.y + bounds.height);
-    
+
     //preserve original scaling etc and draw the max label
     cairo_save(context);
     //Here is some font related crap
@@ -153,28 +153,28 @@ void YPairView::draw() {
     cairo_show_text(context, stopLabelText.c_str());
 
     cairo_restore(context);
-    
-    
-    //Now draw the axes 
+
+
+    //Now draw the axes
     cairo_save(context);
     cairo_translate(context, plotArea.x, plotArea.y);   //FIXME This is treating plotArea as an offset from y-transformed bounds WTF
     cairo_scale(context, plotArea.width/bounds.width, plotArea.height/bounds.height);
     cairo_set_source_rgb(context, 0, 0, 0);  //draw black line
-        
+
     cairo_move_to(context,0,bounds.height); //move to the origin
-    cairo_line_to(context,bounds.width,bounds.height);	//plot horizontal line   
+    cairo_line_to(context,bounds.width,bounds.height);	//plot horizontal line
         //cairo_move_to(context,0,plotArea.y + plotArea.height); //move to the origin
         //cairo_rel_line_to(context,0, 5);	//hardcoded tick mark
         //cairo_rel_move_to(context, plotArea.width,0);
         //cairo_rel_line_to(context,0, -10);	//hardcoded
     cairo_restore(context);
-    
+
     cairo_save(context);
-        
+
     cairo_identity_matrix(context);	//scale to actual size of document
     cairo_set_source_rgb(context, 0, 0, 0);  //draw in black
     cairo_stroke(context);
-    
+
     cairo_restore(context);
 }
 

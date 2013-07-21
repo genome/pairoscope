@@ -1,11 +1,11 @@
 /*----------------------------------
-  $Author: ernfrid $ 
+  $Author: ernfrid $
   $Date: 2010-05-06 13:41:51 -0500 (Thu, 06 May 2010) $
   $Revision: 1 $
   $URL: https://pairoscope.svn.sourceforge.net/svnroot/pairoscope/trunk/src/YRect.h $
   -----------------------------------
 
-  This is a simple color class 
+  This is a simple color class
 
   ----------------------------------*/
 
@@ -22,9 +22,9 @@ class YColor {
     double blue; //!< blue component of the color
     double alpha; //!< alpha component of the color
 
-    //! Constructor for initialization of all parameters 
-    /*! 
-    \param r red component (between 0 and 1) 
+    //! Constructor for initialization of all parameters
+    /*!
+    \param r red component (between 0 and 1)
     \param g green component (between 0 and 1)
     \param b blue component (between 0 and 1)
     \param a alpha component (between 0 and 1)

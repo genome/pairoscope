@@ -1,5 +1,5 @@
 /*----------------------------------
-  $Author$ 
+  $Author$
   $Date$
   $Revision$
   $URL$
@@ -17,7 +17,7 @@ YGeneView::YGeneView(cairo_t *cr, YRect initialFrame, const char *refName, unsig
     strcpy(this->refName, refName);
     this->fontSize = fontSize;
     this->topTranscript = topTranscript;
-    
+
 }
 
 
@@ -28,7 +28,7 @@ YGeneView::~YGeneView() {
 }
 
 void YGeneView::draw() {
-    //Now draw the axes 
+    //Now draw the axes
     cairo_save(context);
     cairo_translate(context, plotArea.x, plotArea.y);
     cairo_scale(context, plotArea.width/bounds.width, plotArea.height/bounds.height);
@@ -43,10 +43,10 @@ void YGeneView::draw() {
     cairo_font_extents_t font_extents;
     cairo_font_extents(context,&font_extents);
     double font_height = font_extents.ascent + font_extents.descent;    //try to get maximum font height for spacing. May be imperfect
-    fprintf(stderr, "font height: %f\n",font_height); 
+    fprintf(stderr, "font height: %f\n",font_height);
     double dummy = 0;
     cairo_device_to_user_distance(context, &dummy, &font_height);
-    fprintf(stderr, "scaled font height: %f\n",font_height); 
+    fprintf(stderr, "scaled font height: %f\n",font_height);
 
     std::vector<YTranscript*> *transcriptsToGraph;
     if(topTranscript) {
@@ -119,9 +119,9 @@ void YGeneView::draw() {
                 snprintf(startExon,sizeof(char)*149,"%d",transcript->orderedStructures[0].ordinal+1);
                 snprintf(endExon,sizeof(char)*149,"%d",transcript->orderedStructures[transcript->orderedStructures.size()-1].ordinal+1);
                 snprintf(exonNumber,sizeof(char)*149,"%d",transcript->totalNumberOfStructures);
-                
+
                 if(transcript->strand == 1) {
-                    geneLabel += startExon; 
+                    geneLabel += startExon;
                     geneLabel += "-";
                     geneLabel += endExon;
                     geneLabel += " out of ";
@@ -132,7 +132,7 @@ void YGeneView::draw() {
                 else {
                     geneLabel += endExon;
                     geneLabel += "-";
-                    geneLabel += startExon; 
+                    geneLabel += startExon;
                     geneLabel += " out of ";
                     snprintf(exonNumber,sizeof(char)*149,"%d",transcript->totalNumberOfStructures);
                     geneLabel += exonNumber;
@@ -152,7 +152,7 @@ void YGeneView::draw() {
                     double dash = 3.0;
                     cairo_set_dash(context,&dash, 1, 0);
                     cairo_stroke(context);
-                    cairo_restore(context);    
+                    cairo_restore(context);
                 }
                 cairo_rectangle(context, (double) structure.position - physicalStart, transcriptUpperBound, (double) structure.length, (transcriptHeight - font_height) );
                 cairo_save(context);
@@ -161,8 +161,8 @@ void YGeneView::draw() {
                 cairo_fill_preserve(context);
                 cairo_set_source_rgb(context, 0, 0, 0);
                 cairo_stroke(context);
-                cairo_restore(context);    
-                cairo_move_to(context, (double) structure.position - physicalStart + (double) structure.length, linePosition); 
+                cairo_restore(context);
+                cairo_move_to(context, (double) structure.position - physicalStart + (double) structure.length, linePosition);
             }
             if(!(structure.ordinal == 0 && transcript->strand==-1) && !(structure.ordinal == (transcript->totalNumberOfStructures-1) && transcript->strand==1)) {
                 cairo_line_to(context, physicalStop - physicalStart, linePosition);
@@ -172,24 +172,24 @@ void YGeneView::draw() {
                 double dash = 3.0;
                 cairo_set_dash(context,&dash, 1, 0);
                 cairo_stroke(context);
-                cairo_restore(context);    
+                cairo_restore(context);
             }
         }
     }
     cairo_restore(context);
 }
-    
+
 void YGeneView::calculateAxes() {
     setBounds(YRect(0,0,physicalStop-physicalStart, bounds.height));
     plotArea = bounds;
 }
-    
+
 YRect YGeneView::plotAreaInParentCoordinates() {
     //TODO FOR THE LOVE OF CHRIS, MAKE THIS A BASE CLASS ALREADY
     YRect returnPlotArea = this->plotArea;
     YView::rectInParentCoordinates(&returnPlotArea);
     return returnPlotArea;
-    
+
 }
 
 bool YGeneView::setPlotAreaInParentCoordinates(YRect newPlotArea) {

@@ -72,7 +72,7 @@ public:
     std::set<std::string> library_names() const {
         return _library_names;
     }
-    
+
     double mean_for_readgroup(std::string readgroup) const {
         std::map<std::string, YBDConfigEntry>::const_iterator iter = _entries.find(readgroup);
         if(iter == _entries.end()) {

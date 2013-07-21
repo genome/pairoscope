@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(pairoscope)
 
-set(SOURCES 
+set(SOURCES
     YAlignmentFetcher.cpp
     YAlignmentFetcher.h
     YBDConfig.h
