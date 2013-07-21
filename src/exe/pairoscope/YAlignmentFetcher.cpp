@@ -9,19 +9,14 @@
 #include <iostream>
 #include <stdexcept>
 
-// Probably going to need to define some extern "C" functions and structs here
-// to pass to bam as callbacks (BLEAH)
-
-// this is in bam_aux.c (from samtools) but not in a header
 extern "C" {
+    // These are in bam_aux.c (from samtools), but not in a header.
     int32_t bam_get_tid(const bam_header_t *header, const char *seq_name);
     void bam_init_header_hash(bam_header_t *header);
 }
 
-// callback for bam_fetch()
-// This will retrieve MF flag, add the read to the hash, and add read to pileup
-// buffer.
 extern "C" {
+    // Callback helper for samtools pileup API.
     static int pileup_func(
             uint32_t tid,
             uint32_t pos,
@@ -75,17 +70,16 @@ YAlignmentFetcher::YAlignmentFetcher(
     idx = bam_index_load(filename); // load BAM index
     if (idx == 0) {
         std::stringstream ss;
-        ss << "BAM indexing file is not available.\n";
+        ss << "Failed to load BAM index for " << filename;
         throw std::runtime_error(ss.str());
     }
 
     if(in->header) {
         bam_init_header_hash(in->header);
     }
-
     else {
         std::stringstream ss;
-        ss << "Header required in bam file " << filename << "\n";
+        ss << "Header required in bam file " << filename;
         throw std::runtime_error(ss.str());
     }
 }
@@ -104,7 +98,8 @@ int YAlignmentFetcher::pushRead(bam1_t const* b) {
             }
             else {
                 // already know this should be paired so check if mate
-                // information is available otherwise exit
+                // information is available. if not, we can try the MAQ
+                // MF flag...
                 if(b->core.mtid < 0 ) {
                     readflag = flag_from_maq_tag(b);
                 }
@@ -146,7 +141,7 @@ int YAlignmentFetcher::pushRead(bam1_t const* b) {
                     }
                 }
 
-                //enforce the whole minimum size thing by marking such reads as NF
+                //enforce the minimum size by marking such reads as NF
                 if(abs_size < minimum_isize && readflag != YMatePair::CT) {
                     readflag = YMatePair::NF;
                 }
@@ -214,7 +209,7 @@ void YAlignmentFetcher::fetchBAMAlignments(
     int tid = bam_get_tid(in->header, refName);
     if(tid == -1) {
         std::stringstream ss;
-        ss << "Reference id " << refName << " not found in BAM file\n";
+        ss << "Sequence name '" << refName << "' not found in BAM file";
         throw std::runtime_error(ss.str());
     }
 

@@ -30,9 +30,13 @@ include_directories("src/lib")
 include_directories("src/exe/pairoscope")
 
 # main project
+enable_testing(true)
+add_projects(test/lib)
+
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 add_projects(src/exe)
+
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

@@ -28,9 +28,17 @@ public:
         setRegion(sequence_name, begin, end);
     }
 
+    // Basics
+    value_type const& max_value() const { return _max; }
+    size_type size() const { return _depth.size(); }
+    bool empty() const { return _depth.empty(); }
+    std::string const& sequence_name() { return _sequence_name; }
+    size_t begin_pos() const { return _begin; }
+    size_t end_pos() const { return _end; }
+
     void setRegion(std::string const& sequence_name, size_t begin, size_t end) {
         if (end <= begin) {
-            throw std::runtime_error("DepthArray: end must be > begin!");
+            throw std::range_error("DepthArray: end must be > begin!");
         }
 
         _sequence_name = sequence_name;
@@ -62,18 +70,6 @@ public:
         _max = std::max(_max, target);
     }
 
-    value_type const& max() const {
-        return _max;
-    }
-
-    size_type size() const {
-        return _depth.size();
-    }
-
-    bool empty() const {
-        return _depth.empty();
-    }
-
     int pileupCallback(
         uint32_t tid,
         uint32_t pos,
@@ -98,10 +94,9 @@ public:
         return 0;
     }
 
-
 private:
     void validate_position(size_t pos) const {
-        if (pos < _begin || pos > _end) {
+        if (pos < _begin || pos >= _end) {
             std::stringstream ss;
             ss << "Request for position '" << pos << " in depth array for "
                 "region " << _sequence_name << ":" << _begin << ":" << _end;

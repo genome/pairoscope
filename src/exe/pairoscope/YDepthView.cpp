@@ -10,6 +10,7 @@
   ----------------------------------*/
 
 #include "YDepthView.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -148,14 +149,8 @@ void YDepthView::calculateAxes() {
     //add in the offset
     //store the available space for the actual graph somewhere
     if(autoScale) {
-        int max = 0;
-        if(depth->empty()) {
-            max = 1;
-        }
-        else {
-            max = depth->max();
-        }
-        setDisplayMaximumDepth(max);
+        int maxval = std::max(1, depth->max_value());
+        setDisplayMaximumDepth(maxval);
     }
 
     //For the depth view we won't print X labels, so just calculate the space needed for the Y axis
