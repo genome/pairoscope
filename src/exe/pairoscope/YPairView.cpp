@@ -15,7 +15,14 @@ $URL$
 using std::stringstream;
 
 YPairView::YPairView(cairo_t *cr, YRect initialFrame, const char *refName, unsigned int physicalStart, unsigned int physicalStop, double readHeight, double fontSize, double axisOffset)
-    : YView(cr, initialFrame, false, true), refName(NULL), startLabelText(""), stopLabelText("")
+    : YView(cr, initialFrame, false, true)
+    , refName(0)
+    , physicalStart(physicalStart)
+    // make sure physicalStop is initialized before calling setPhysicalStart
+    // since it depends on this value
+    , physicalStop(physicalStop)
+    , startLabelText("")
+    , stopLabelText("")
 {
     int length = strlen(refName);
     this->refName = new char[length + 1]; //create space for a copy of the refName
@@ -51,6 +58,7 @@ void YPairView::setPhysicalStart(unsigned int start) {
     label << this->refName << ":" << start;
     startLabelText = label.str();
 }
+
 void YPairView::setPhysicalStop(unsigned int stop) {
     physicalStop = stop;
     setBounds(YRect(0,0,physicalStop-physicalStart,1));
