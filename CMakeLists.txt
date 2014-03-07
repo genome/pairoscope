@@ -17,14 +17,19 @@ include_directories(${Samtools_INCLUDE_DIRS})
 find_package(Cairo REQUIRED)
 include_directories(${Cairo_INCLUDE_DIRS})
 
-if (CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_C_FLAGS "-Wall")
-endif ()
+if(${CMAKE_C_COMPILER_ID} MATCHES "GNU|Clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -pedantic -fPIC")
+endif()
 
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-Wall -ansi -pedantic -std=c++0x")
-endif ()
-
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -fPIC ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnon-virtual-dtor -std=c++0x")
+else()
+    message(
+        WARNING
+        "Unknown compiler: ${CMAKE_C_COMPILER_ID}, we'll see how this goes..."
+    )
+endif()
 # make sure to pick up headers from library dirs
 include_directories("src/exe/pairoscope")
 
