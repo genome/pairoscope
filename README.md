@@ -28,5 +28,5 @@ cmake ../
 make -j
 ```
 
-The binary `pairoscope` can then be found under `pairoscope/build/bin`. If you have administrative rights, then run sudo make install to install the tool for all users under `/usr/bin`.
+The binary `pairoscope` can then be found under `pairoscope/build/bin`. If you have administrative rights, then run `sudo make install` to install the tool for all users under `/usr/bin`.
 
